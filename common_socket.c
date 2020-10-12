@@ -119,14 +119,15 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 
 int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	int total = 0;
-	int sent = 0;
+	//int sent = 0;
 	int fd = socket->file_descriptor;
 	while (total < tamanio) {
-		sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
-		total += sent;
-		if (sent == -1) {
+		//sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
+		//total += sent;
+		total += send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
+		/*if (sent == -1) {
 			return -1;
-		}
+		}*/
 	}
 	return 0;
 }
@@ -141,9 +142,9 @@ int recibirMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 		if (total > tamanio) {
 			mensaje = realloc(mensaje, 64 + sizeof(mensaje));
 		}
-		if (received == -1) {
+		/*if (received == -1) {
 			return -1;
-		}
+		}*/
 	}while (received > 0);
 	return total;
 }
