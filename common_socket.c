@@ -122,8 +122,8 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	int sent = 0;
 	int fd = socket->file_descriptor;
 	while (total < tamanio) {
-		sent = send(fd, mensaje+total, tamanio-1, MSG_NOSIGNAL);
-		total+=sent;
+		sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
+		total += sent;
 		if (sent == -1) {
 			return -1;
 		}
@@ -131,18 +131,20 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	return 0;
 }
 
-int recibirMensaje(socket_t* socket, char* mensaje) {
+int recibirMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	int received = 0;
 	int total = 0;
-	mensaje = (char*)malloc(64 * sizeof(char));
 	int fd = socket->file_descriptor;
-	while ((received = recv(fd, &mensaje[total], 64, 0)) > 0) {
-		total+=received;
-		mensaje = realloc(mensaje, 64 + sizeof(mensaje));
+	do {
+		received = recv(fd, &mensaje[total], tamanio, 0);
+		total += received;
+		if (total > tamanio) {
+			mensaje = realloc(mensaje, 64 + sizeof(mensaje));
+		}
 		if (received == -1) {
 			return -1;
 		}
-	}
+	}while (received > 0);
 	return total;
 }
 

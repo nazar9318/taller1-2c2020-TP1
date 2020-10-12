@@ -1,32 +1,35 @@
 #include "server_usuario.h"
 
-encoder_t* elegirTraductor(char* arg_method, char* arg_key) {
-    selector_t* selector = crearSelector(arg_method, arg_key);
+void elegirTraductor(usuario_t* user) {
     char* method = NULL;
-    method = devolverMetodo(selector);
+    method = devolverMetodo(user->selector);
     char* key = NULL;
-    key = devolverClave(selector);
-    encoder_t* traductor = crearEncoder(method, key, false);
-    return traductor;
+    key = devolverClave(user->selector);
+    user->encoder = crearEncoder(method, key, false);
 }
 
 usuario_t* crearUsuario(int argc, char *argv[]) {
     usuario_t* user = malloc(sizeof(usuario_t));
     user->server = crearSocket(NULL, argv[1], true);
-    user->encoder = elegirTraductor(argv[2], argv[3]);
+    user->selector = crearSelector(argv[2], argv[3]);
+    elegirTraductor(user);
     return user;
 }
 
 void ejecutarPrograma(usuario_t* user) {
-    char* mensaje = NULL;
+    char* mensaje = (char*)malloc(64 * sizeof(char));
     size_t tamanio_mensaje = 0;
     escuchar(user->server);
     socket_t* aceptado = aceptar(user->server);
-    tamanio_mensaje = recibirMensaje(aceptado, mensaje);
+    tamanio_mensaje = recibirMensaje(aceptado, mensaje, 64);
     printf("%s\n", codificar(user->encoder, mensaje, tamanio_mensaje));
+    destruirSocket(aceptado);
+    free(mensaje);
 }
 
 void destruirUsuario(usuario_t* user) {
     destruirSocket(user->server);
+    destruirEncoder(user->encoder);
+    destruirSelector(user->selector);
     free(user);
 }

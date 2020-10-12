@@ -8,6 +8,7 @@
 typedef struct{
     socket_t* server;
     encoder_t* encoder;
+    selector_t* selector;
 }usuario_t;
 
 usuario_t* crearUsuario(int argc, char *argv[]);

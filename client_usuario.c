@@ -1,12 +1,11 @@
 #include "client_usuario.h"
 
-encoder_t* elegirEncriptador(usuario_t* user) {
+void elegirEncriptador(usuario_t* user) {
     char* method = NULL;
     method = devolverMetodo(user->selector);
     char* key = NULL;
     key = devolverClave(user->selector);
-    encoder_t* encriptador = crearEncoder(method, key, true);
-    return encriptador;
+    user->encoder = crearEncoder(method, key, true);
 }
 
 usuario_t* crearUsuario(int argc, char *argv[]) {
@@ -14,7 +13,7 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
     user->cliente = crearSocket(argv[1], argv[2], false);
     user->selector = crearSelector(argv[3], argv[4]);
     user->reader = crearFileReader(stdin);
-    user->encoder = elegirEncriptador(user);
+    elegirEncriptador(user);
     return user;
 }
 
