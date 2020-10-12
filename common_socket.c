@@ -39,18 +39,18 @@ int conectar(socket_t* socket, struct addrinfo* dir) {
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
 struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
-	int fd = -1;
-	bool connected = false;
+	//int fd = -1;
+	//bool connected = false;
 	struct addrinfo *count = NULL;
 	count = dirs;
-	while (count != NULL && !connected) {
-		fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
+	while (count != NULL) {//} && !connected) {
+		int fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
 		if (fd == -1) {
 			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
 			return NULL;
 		} else {
 			t_socket->file_descriptor = fd;
-			connected = true;
+			//connected = true;
 			return count;
 		}
 		count = count->ai_next;
