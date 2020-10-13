@@ -128,7 +128,7 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 			return sent;
 		}
 	}
-	return 0;
+	return sent;
 }
 
 int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio) {
