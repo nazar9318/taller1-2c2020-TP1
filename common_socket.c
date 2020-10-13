@@ -44,7 +44,7 @@ struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
 	struct addrinfo *count = NULL;
 	count = dirs;
 	while (count != NULL) {// && !connected) {
-		t_socket->fd = socket(count->ai_family, count->ai_socktype,count->ai_protocol);
+		t_socket->fd=socket(count->ai_family,count->ai_socktype,count->ai_protocol);
 		if (t_socket->fd == -1) {
 			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
 			return NULL;
