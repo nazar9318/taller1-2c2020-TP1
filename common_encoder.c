@@ -34,7 +34,7 @@ char* codificar(encoder_t* encoder, char* mensaje, size_t tamanio_mensaje) {
     } else if (strcmp(encoder->method, "vigenere") == 0) {
         return codificarVigenere(encoder, mensaje, tamanio_mensaje);
     }
-	return NULL;
+    return NULL;
 }
 
 void destruirEncoder(encoder_t* encoder) {

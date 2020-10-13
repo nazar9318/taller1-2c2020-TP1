@@ -29,7 +29,7 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio);
 //Pre condicion: Ninguna
 //Post condicion: Devuelve el arreglo binario completo,
 //si se corto la comunicacion se devuelve NULL.
-int recibirMensaje(socket_t* socket, char* mensaje, size_t tamanio);
+int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio);
 
 socket_t* aceptar(socket_t* socket);
 

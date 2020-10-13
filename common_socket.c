@@ -39,18 +39,18 @@ int conectar(socket_t* socket, struct addrinfo* dir) {
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
 struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
-	//int fd = -1;
-	//bool connected = false;
+	int fd = -1;
+	bool connected = false;
 	struct addrinfo *count = NULL;
 	count = dirs;
-	while (count != NULL) {//} && !connected) {
-		int fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
+	while (count != NULL && !connected) {
+		fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
 		if (fd == -1) {
 			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
 			return NULL;
 		} else {
 			t_socket->file_descriptor = fd;
-			//connected = true;
+			connected = true;
 			return count;
 		}
 		count = count->ai_next;
@@ -119,34 +119,36 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 
 int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	int total = 0;
-	//int sent = 0;
+	int sent = 0;
 	int fd = socket->file_descriptor;
 	while (total < tamanio) {
-		//sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
-		//total += sent;
-		total += send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
-		/*if (sent == -1) {
+		sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
+		total += sent;
+		if (sent == -1) {
 			return -1;
-		}*/
+		}
 	}
 	return 0;
 }
 
-int recibirMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
+int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio) {
 	int received = 0;
-	int total = 0;
+	int total_received = 0;
+	int cur_size = tamanio;
 	int fd = socket->file_descriptor;
+        *mensaje = malloc(tamanio);
 	do {
-		received = recv(fd, &mensaje[total], tamanio, 0);
-		total += received;
-		if (total > tamanio) {
-			mensaje = realloc(mensaje, 64 + sizeof(mensaje));
+		if (total_received >= cur_size) {
+			cur_size += tamanio;
+			*mensaje = realloc(*mensaje, cur_size);
 		}
-		/*if (received == -1) {
+		received = recv(fd, *mensaje + total_received, cur_size, 0);
+		total_received += received;
+		if (received == -1) {
 			return -1;
-		}*/
-	}while (received > 0);
-	return total;
+		}
+	} while (received > 0);
+	return total_received;
 }
 
 int escuchar(socket_t* socket) {
@@ -170,3 +172,4 @@ socket_t* aceptar(socket_t* socket) {
 	}
 	return crearSocketAceptado(aceptado);
 }
+
