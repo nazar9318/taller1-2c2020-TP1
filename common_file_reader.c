@@ -3,7 +3,7 @@
 void leerArchivo(file_reader_t* file_reader) {
 	int buff = file_reader->tamanio;
 	if(fgets(file_reader->buffer, buff, file_reader->file) != NULL) {
-		if (strchr(file_reader->buffer, '\n') == NULL && !feof(file_reader->file)) {
+		if ((strchr(file_reader->buffer, '\n')==NULL)&&(!feof(file_reader->file))) {
 			while (strchr(file_reader->buffer, '\n') == NULL && !feof(file_reader->file)) {
 				fseek(file_reader->file, -(buff-1), SEEK_CUR);
 				buff+=32;
