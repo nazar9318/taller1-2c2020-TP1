@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 typedef struct{
-	int file_descriptor;
+	int fd;
 }socket_t;
 
 //Funcion: Crea un tipo de dato socket

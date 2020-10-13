@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 void destruirSocket(socket_t* socket) {
-	close(socket->file_descriptor);
+	close(socket->fd);
 	free(socket);
 }
 
@@ -13,10 +13,10 @@ void destruirSocket(socket_t* socket) {
 //Pre condicion: Ninguna.
 //Post condicion: Si falla al enlazar cierra el file descriptor
 int enlazar(socket_t* socket, struct addrinfo* dir) {
-	int fd = socket->file_descriptor;
+	int fd = socket->fd;
 	if (bind(fd, dir->ai_addr, dir->ai_addrlen) == -1) {
 		printf("Error, servidor no pudo enlazar: %s\n", strerror(errno));
-		close(socket->file_descriptor);
+		close(socket->fd);
 		return -1;
 	}
 	return 0;
@@ -26,10 +26,10 @@ int enlazar(socket_t* socket, struct addrinfo* dir) {
 //Pre condicion: Ninguna.
 //Post condicion: Si falla al enlazar cierra el file descriptor
 int conectar(socket_t* socket, struct addrinfo* dir) {
-	int fd = socket->file_descriptor;
+	int fd = socket->fd;
 	if (connect(fd, dir->ai_addr, dir->ai_addrlen) == -1) {
 		printf("Error, cliente no pudo conectar: %s\n", strerror(errno));
-		close(socket->file_descriptor);
+		close(socket->fd);
 		return -1;
 	}
 	return 0;
@@ -39,17 +39,17 @@ int conectar(socket_t* socket, struct addrinfo* dir) {
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
 struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
-	int fd;
+//	int fd;
 //	bool connected = false;
 	struct addrinfo *count = NULL;
 	count = dirs;
 	while (count != NULL) {// && !connected) {
-		fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
-		if (fd == -1) {
+		t_socket->fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
+		if (t_socket->fd == -1) {
 			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
 			return NULL;
 		} else {
-			t_socket->file_descriptor = fd;
+//			t_socket->fd = fd;
 //			connected = true;
 			return count;
 		}
@@ -89,7 +89,7 @@ struct addrinfo* crearDirecciones(char* host, char* port, bool es_server) {
 
 socket_t* crearSocketAceptado(int file_descriptor) {
 	socket_t* socket = malloc(sizeof(socket_t));
-	socket->file_descriptor = file_descriptor;
+	socket->fd = file_descriptor;
 	return socket;
 }
 
@@ -120,7 +120,7 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	int total = 0;
 	int sent = 0;
-	int fd = socket->file_descriptor;
+	int fd = socket->fd;
 	while (total < tamanio) {
 		sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
 		total += sent;
@@ -135,7 +135,7 @@ int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio) {
 	int received = 0;
 	int total_received = 0;
 	int cur_size = tamanio;
-	int fd = socket->file_descriptor;
+	int fd = socket->fd;
         *mensaje = malloc(tamanio);
 	do {
 		if (total_received >= cur_size) {
@@ -152,7 +152,7 @@ int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio) {
 }
 
 int escuchar(socket_t* socket) {
-	int fd = socket->file_descriptor;
+	int fd = socket->fd;
 	if (listen(fd, 1) == -1) {
 		printf("Error, servidor no puede escuchar al cliente: %s\n", strerror(errno));
 		destruirSocket(socket);
@@ -162,7 +162,7 @@ int escuchar(socket_t* socket) {
 }
 
 socket_t* aceptar(socket_t* socket) {
-	int fd = socket->file_descriptor;
+	int fd = socket->fd;
 	int aceptado;
 	aceptado = accept(fd, NULL, NULL);
 	if (aceptado == -1) {
