@@ -39,18 +39,18 @@ int conectar(socket_t* socket, struct addrinfo* dir) {
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
 struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
-	int fd = -1;
-	bool connected = false;
+	int fd;
+//	bool connected = false;
 	struct addrinfo *count = NULL;
 	count = dirs;
-	while (count != NULL && !connected) {
+	while (count != NULL) {// && !connected) {
 		fd = socket(count->ai_family, count->ai_socktype, count->ai_protocol);
 		if (fd == -1) {
 			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
 			return NULL;
 		} else {
 			t_socket->file_descriptor = fd;
-			connected = true;
+//			connected = true;
 			return count;
 		}
 		count = count->ai_next;
@@ -125,7 +125,7 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 		sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
 		total += sent;
 		if (sent == -1) {
-			return -1;
+			return sent;
 		}
 	}
 	return 0;
@@ -144,9 +144,9 @@ int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio) {
 		}
 		received = recv(fd, *mensaje + total_received, cur_size, 0);
 		total_received += received;
-		if (received == -1) {
+/*		if (received == -1) {
 			return -1;
-		}
+		}*/
 	} while (received > 0);
 	return total_received;
 }
