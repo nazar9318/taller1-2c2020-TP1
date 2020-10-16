@@ -39,18 +39,14 @@ int conectar(socket_t* socket, struct addrinfo* dir) {
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
 struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
-//	int fd;
-//	bool connected = false;
 	struct addrinfo *count = NULL;
 	count = dirs;
-	while (count != NULL) {// && !connected) {
-		t_socket->fd=socket(count->ai_family,count->ai_socktype,count->ai_protocol);
+	while (count != NULL) {
+		t_socket->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
 		if (t_socket->fd == -1) {
 			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
 			return NULL;
 		} else {
-//			t_socket->fd = fd;
-//			connected = true;
 			return count;
 		}
 		count = count->ai_next;
@@ -118,35 +114,29 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 }
 
 int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
-	int total = 0;
-	int sent = 0;
+	int total, sent = 0;
 	int fd = socket->fd;
 	while (total < tamanio) {
-		sent = send(fd, mensaje+total, tamanio, MSG_NOSIGNAL);
+		sent = send(fd, mensaje+total, tamanio-total, MSG_NOSIGNAL);
 		total += sent;
-		if (sent == -1) {
-			return sent;
-		}
+		if (sent == -1) {return sent;}
+		
 	}
 	return sent;
 }
 
-int recibirMensaje(socket_t* socket, char** mensaje, size_t tamanio) {
-	int received = 0;
-	int total_received = 0;
-	int cur_size = tamanio;
-	int fd = socket->fd;
-        *mensaje = malloc(tamanio);
+int recibirMensaje(socket_t* socket, char** mensaje) {
+	int received, total_received = 0;
+	int cur_size = 1;
+    *mensaje = malloc(cur_size);
 	do {
 		if (total_received >= cur_size) {
 			cur_size += total_received;
 			*mensaje = realloc(*mensaje, cur_size);
 		}
-		received = recv(fd, *mensaje + total_received, tamanio, 0);
+		received = recv(socket->fd, *mensaje + total_received, 1, 0);
+		if (received == -1) {return -1;}
 		total_received += received;
-		if (received == -1) {
-			return -1;
-		}
 	} while (received > 0);
 	return total_received;
 }
@@ -172,4 +162,3 @@ socket_t* aceptar(socket_t* socket) {
 	}
 	return crearSocketAceptado(aceptado);
 }
-
