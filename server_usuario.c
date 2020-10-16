@@ -18,11 +18,11 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 
 void ejecutarPrograma(usuario_t* user) {
     unsigned char* mensaje = NULL;
-    size_t tamanio_mensaje = 0;
     socket_t* aceptado = NULL;
     if (escuchar(user->server) == 0) {
 	aceptado = aceptar(user->server);
 	if ((aceptado) != NULL) {
+        size_t tamanio_mensaje = 0;
 		tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
 		printf("%s\n", encript(user->encoder, mensaje, tamanio_mensaje));
 		destruirSocket(aceptado);
