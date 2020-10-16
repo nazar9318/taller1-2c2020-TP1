@@ -19,7 +19,6 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 		printf("La cantidad de argumentos insertados es incorrecta.\n");
 		return NULL;
 	}
-	
 }
 
 void ejecutarPrograma(usuario_t* user) {
