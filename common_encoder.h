@@ -14,7 +14,7 @@ typedef struct{
 
 encoder_t* crearEncoder(char* method, char* key, bool es_encriptador);
 
-char* codificar(encoder_t* encoder, char* mensaje, size_t tamanio_mensaje);
+char* codificar(encoder_t* encoder, char* mensaje, int tamanio_mensaje);
 
 void destruirEncoder(encoder_t* encoder);
 

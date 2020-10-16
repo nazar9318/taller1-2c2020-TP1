@@ -28,7 +28,7 @@ char* codificarVigenere(encoder_t* encoder, char* mensaje, size_t tamanio) {
     return mensaje;
 }
 
-char* codificar(encoder_t* encoder, char* mensaje, size_t tamanio_mensaje) {
+char* codificar(encoder_t* encoder, char* mensaje, int tamanio_mensaje) {
     if (tamanio_mensaje < 0) {
     	printf("Error, el mensaje a codificar es inválido\n");
 	    return NULL;
