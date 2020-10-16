@@ -18,12 +18,16 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 }
 
 void ejecutarPrograma(usuario_t* user) {
-	char* mensaje_original = NULL;
-	mensaje_original = getRead(user->reader);
-	size_t tamanio_mensaje = getSize(user->reader);
-	char* cifrado = NULL;
-	cifrado = codificar(user->encoder, mensaje_original, tamanio_mensaje);
-	enviarMensaje(user->cliente, cifrado, tamanio_mensaje);
+	if (user->cliente != NULL) {
+		char* mensaje_original = NULL;
+		mensaje_original = getRead(user->reader);
+		size_t tamanio_mensaje = getSize(user->reader);
+		char* cifrado = NULL;
+		cifrado = codificar(user->encoder, mensaje_original, tamanio_mensaje);
+		if (cifrado != NULL) {
+			enviarMensaje(user->cliente, cifrado, tamanio_mensaje);
+		}
+	}
 }
 
 void destruirUsuario(usuario_t* user) {
@@ -33,3 +37,4 @@ void destruirUsuario(usuario_t* user) {
     destruirSocket(user->cliente);
     free(user);
 }
+

@@ -5,7 +5,9 @@
 #include <unistd.h>
 
 void destruirSocket(socket_t* socket) {
-	close(socket->fd);
+	if (socket != NULL) {
+		close(socket->fd);
+	}
 	free(socket);
 }
 
@@ -89,6 +91,23 @@ socket_t* crearSocketAceptado(int file_descriptor) {
 	return socket;
 }
 
+socket_t* bindConnect(socket_t* sckt, struct addrinfo* dir, bool es_server) {
+	if (es_server) {
+		if (enlazar(sckt, dir) == 0) {
+			freeaddrinfo(dir);
+			return sckt;
+		}
+	} else {
+		if (conectar(sckt, dir) == 0) {
+			freeaddrinfo(dir);
+			return sckt;
+		}
+	}
+	freeaddrinfo(dir);
+	free(sckt);
+	return NULL;
+}
+
 socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 	socket_t* socket = malloc(sizeof(socket_t));
 	struct addrinfo *direcciones = NULL;
@@ -97,19 +116,11 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 		struct addrinfo* direccion_aceptada = NULL;
 		direccion_aceptada = setFileDescriptor(socket, direcciones);
 		if (direccion_aceptada != NULL) {
-			if (es_server) {
-				if (enlazar(socket, direccion_aceptada) == 0) {
-					freeaddrinfo(direcciones);
-					return socket;
-				}
-			} else {
-				if (conectar(socket, direccion_aceptada) == 0) {
-					freeaddrinfo(direcciones);
-					return socket;
-				}
-			}
+			return bindConnect(socket, direccion_aceptada, es_server);
 		}
 	}
+	freeaddrinfo(direcciones);
+	free(socket);
 	return NULL;
 }
 
@@ -118,18 +129,19 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 	int sent = 0;
 	int fd = socket->fd;
 	while (total < tamanio) {
-		sent = send(fd, mensaje+total, tamanio-total, MSG_NOSIGNAL);
+		sent = send(fd, mensaje+total, tamanio - total, MSG_NOSIGNAL);
 		total += sent;
-		if (sent == -1) {return sent;}
+		if (sent == -1) {
+			return sent;
+		}
 	}
 	return sent;
 }
 
 int recibirMensaje(socket_t* socket, char** mensaje) {
-	int received = 0;
-	int total_received = 0;
+	int received, total_received = 0;
 	int cur_size = 1;
-    *mensaje = malloc(cur_size);
+        *mensaje = malloc(1);
 	do {
 		if (total_received >= cur_size) {
 			cur_size += total_received;
@@ -163,3 +175,4 @@ socket_t* aceptar(socket_t* socket) {
 	}
 	return crearSocketAceptado(aceptado);
 }
+
