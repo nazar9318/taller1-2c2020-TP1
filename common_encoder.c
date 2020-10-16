@@ -12,19 +12,21 @@ unsigned char* cesar(encoder_t* encoder, unsigned char* msje, size_t size) {
     bool es_encriptador = encoder->es_encriptador;
     unsigned int u_key = (unsigned int) atoi(encoder->key);
     for (int i = 0; i < size; i++) {
-        msje[i] += u_key * (es_encriptador ? 1 : -1);
+        msje[i] += es_encriptador ? u_key : 256 - u_key;
     }
     return msje;
 }
 
 unsigned char* vigenere(encoder_t* encoder, unsigned char* msje, size_t size) {
     size_t buff_key = 0;
-    int tipo_codificacion = encoder->es_encriptador ? 1 : -1;
+    bool tipo = encoder->es_encriptador;
     for (int i = 0; i < size; i++) {
         if ((i + buff_key) >= strlen(encoder->key)) {
             buff_key -= strlen(encoder->key);
         }
-        msje[i] += ((encoder->key[i + buff_key]) * tipo_codificacion);
+	char key_char = encoder->key[i + buff_key];
+	unsigned char buffer = tipo ? key_char : (256 - key_char);
+        msje[i] += buffer;
     }
     return msje;
 }
