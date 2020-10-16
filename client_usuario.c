@@ -1,11 +1,11 @@
 #include "client_usuario.h"
 
 void elegirEncriptador(usuario_t* user) {
-    char* method = NULL;
-    method = devolverMetodo(user->selector);
-    char* key = NULL;
-    key = devolverClave(user->selector);
-    user->encoder = crearEncoder(method, key, true);
+	char* method = NULL;
+	method = devolverMetodo(user->selector);
+	char* key = NULL;
+	key = devolverClave(user->selector);
+	user->encoder = crearEncoder(method, key, true);
 }
 
 usuario_t* crearUsuario(int argc, char *argv[]) {
@@ -28,7 +28,7 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 }
 
 void ejecutarPrograma(usuario_t* user) {
-	if (user->cliente != NULL) {
+	if (user != NULL && user->cliente != NULL) {
 		unsigned char* mensaje_original = NULL;
 		mensaje_original = getRead(user->reader);
 		size_t tamanio_mensaje = getSize(user->reader);
@@ -41,10 +41,12 @@ void ejecutarPrograma(usuario_t* user) {
 }
 
 void destruirUsuario(usuario_t* user) {
-    destruirSelector(user->selector);
-    destruirEncoder(user->encoder);
-    destruirFileReader(user->reader);
-    destruirSocket(user->cliente);
-    free(user);
+	if (user != NULL) {
+		destruirSelector(user->selector);
+		destruirEncoder(user->encoder);
+		destruirFileReader(user->reader);
+		destruirSocket(user->cliente);
+		free(user);
+	}
 }
 
