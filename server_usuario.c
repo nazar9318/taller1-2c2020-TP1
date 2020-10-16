@@ -20,13 +20,17 @@ void ejecutarPrograma(usuario_t* user) {
     char* mensaje = NULL;
     socket_t* aceptado = NULL;
     if (escuchar(user->server) == 0) {
-	aceptado = aceptar(user->server);
-	if ((aceptado) != NULL) {
-        int tamanio_mensaje = 0;
-		tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
-		printf("%s\n", codificar(user->encoder, mensaje, tamanio_mensaje));
-		destruirSocket(aceptado);
-	}
+        aceptado = aceptar(user->server);
+        if ((aceptado) != NULL) {
+            int tamanio_mensaje = 0;
+            tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
+            char* traduccion = NULL;
+            traduccion = codificar(user->encoder, mensaje, tamanio_mensaje);
+            if (traduccion != NULL) {
+                printf("%s\n", traduccion);
+            }
+            destruirSocket(aceptado);
+        }
     }
     free(mensaje);
 }
@@ -37,4 +41,3 @@ void destruirUsuario(usuario_t* user) {
     destruirSelector(user->selector);
     free(user);
 }
-
