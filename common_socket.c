@@ -120,7 +120,6 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 		sent = send(fd, mensaje+total, tamanio-total, MSG_NOSIGNAL);
 		total += sent;
 		if (sent == -1) {return sent;}
-		
 	}
 	return sent;
 }

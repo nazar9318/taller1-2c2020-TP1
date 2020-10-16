@@ -21,7 +21,7 @@ void ejecutarPrograma(usuario_t* user) {
     size_t tamanio_mensaje = 0;
     escuchar(user->server);
     socket_t* aceptado = aceptar(user->server);
-    tamanio_mensaje = recibirMensaje(aceptado, &mensaje, 64);
+    tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
     printf("%s", codificar(user->encoder, mensaje, tamanio_mensaje));
     destruirSocket(aceptado);
     free(mensaje);
