@@ -13,7 +13,7 @@ typedef struct{
 
 encoder_t* crearEncoder(char* method, char* key, bool es_encriptador);
 
-unsigned char* encript(encoder_t* encoder, unsigned char* msje, size_t size);
+unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size);
 
 void destruirEncoder(encoder_t* encoder);
 

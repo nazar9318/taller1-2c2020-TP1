@@ -22,7 +22,7 @@ void ejecutarPrograma(usuario_t* user) {
     if (escuchar(user->server) == 0) {
 	aceptado = aceptar(user->server);
 	if ((aceptado) != NULL) {
-        size_t tamanio_mensaje = 0;
+        int tamanio_mensaje = 0;
 		tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
 		printf("%s\n", encript(user->encoder, mensaje, tamanio_mensaje));
 		destruirSocket(aceptado);

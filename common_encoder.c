@@ -11,9 +11,8 @@ encoder_t* crearEncoder(char* method, char* key, bool es_encriptador) {
 unsigned char* cesar(encoder_t* encoder, unsigned char* msje, size_t size) {
     bool es_encriptador = encoder->es_encriptador;
     unsigned int u_key = (unsigned int) atoi(encoder->key);
-    int key_int = u_key * (es_encriptador ? 1 : -1);
     for (int i = 0; i < size; i++) {
-        msje[i] += key_int;
+        msje[i] += u_key * (es_encriptador ? 1 : -1);
     }
     return msje;
 }
@@ -59,10 +58,10 @@ unsigned char* rC4(encoder_t* encoder, unsigned char* msje, size_t size) {
 	return msje;
 }
 
-unsigned char* encript(encoder_t* encoder, unsigned char* msje, size_t size) {
+unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size) {
     if (size < 0) {
-	printf("Error, el mensaje a codificar es inválido\n");
-	return NULL;
+		printf("Error, el mensaje a codificar es inválido\n");
+		return NULL;
     } else {
 	 if (strcmp(encoder->method, "cesar") == 0) {
 		return cesar(encoder, msje, size);
