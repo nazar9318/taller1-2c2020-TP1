@@ -11,7 +11,7 @@ encoder_t* crearEncoder(char* method, char* key, bool es_encriptador) {
 unsigned char* cesar(encoder_t* encoder, unsigned char* msje, size_t size) {
     bool es_encriptador = encoder->es_encriptador;
     unsigned int u_key = (unsigned int) atoi(encoder->key);
-    unsigned int key_int = u_key * (es_encriptador ? 1 : -1);
+    int key_int = u_key * (es_encriptador ? 1 : -1);
     for (int i = 0; i < size; i++) {
         msje[i] += key_int;
     }
