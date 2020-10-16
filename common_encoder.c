@@ -30,8 +30,8 @@ char* codificarVigenere(encoder_t* encoder, char* mensaje, size_t tamanio) {
 
 char* codificar(encoder_t* encoder, char* mensaje, size_t tamanio_mensaje) {
     if (tamanio_mensaje < 0) {
-	printf("Error, el mensaje a codificar es inválido\n");
-	return NULL;
+    	printf("Error, el mensaje a codificar es inválido\n");
+	    return NULL;
     } else {
 	 if (strcmp(encoder->method, "cesar") == 0) {
 		return codificarCesar(encoder, mensaje, tamanio_mensaje);
