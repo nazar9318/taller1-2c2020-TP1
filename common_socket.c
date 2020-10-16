@@ -148,7 +148,9 @@ int recibirMensaje(socket_t* socket, unsigned char** mensaje) {
 			*mensaje = realloc(*mensaje, cur_size);
 		}
 		received = recv(socket->fd, *mensaje + total_received, 1, 0);
-		if (received == -1) {return -1;}
+		if (received == -1) {
+			return -1;
+		}
 		total_received += received;
 	} while (received > 0);
 	return total_received;

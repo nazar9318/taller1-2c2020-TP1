@@ -1,22 +1,25 @@
 #include "common_file_reader.h"
 
 void leerArchivo(file_reader_t* file_reader) {
-	int buff = file_reader->tamanio;
+	size_t buff = file_reader->tamanio;
 	FILE* file = file_reader->file;
-	if(fgets(file_reader->buffer, buff, file) != NULL) {
-		if (strchr(file_reader->buffer, '\n') == NULL && !feof(file)) {
-			while (strchr(file_reader->buffer, '\n') == NULL && !feof(file)) {
-				fseek(file, -(buff-1), SEEK_CUR);
-				buff+=32;
-				file_reader->buffer = realloc(file_reader->buffer, buff);
-				file_reader->buffer = fgets(file_reader->buffer, buff, file);
-			}
+	fseek(file, 0, SEEK_SET);
+	size_t read = fread(file_reader->buffer, 1, buff, file);
+	if(read == buff) {
+		while (!feof(file)) {
+			fseek(file, 0, SEEK_SET);
+			buff+=64;
+			char* aux = calloc(buff, sizeof(char));
+			memcpy(aux, file_reader->buffer, read);
+			free(file_reader->buffer);
+			file_reader->buffer = aux;
+			read = fread(file_reader->buffer, 1, buff, file);
 		}
-	} else {
+	} else if (!feof(file)) {
 		free(file_reader->buffer);
 		file_reader->buffer = NULL;
 	}
-	file_reader->tamanio = strlen(file_reader->buffer);
+	file_reader->tamanio = read;
 }
 
 file_reader_t* crearFileReader(FILE* file) {
