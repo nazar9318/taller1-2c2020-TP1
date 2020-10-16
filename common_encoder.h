@@ -2,20 +2,20 @@
 #define COMMON_ENCODER_H
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct{
     char* key;
     char* method;
     bool es_encriptador;
-    size_t tamanio_mensaje;
 }encoder_t;
 
 encoder_t* crearEncoder(char* method, char* key, bool es_encriptador);
 
-char* codificar(encoder_t* encoder, char* mensaje, int tamanio_mensaje);
+unsigned char* encript(encoder_t* encoder, unsigned char* msje, size_t size);
 
 void destruirEncoder(encoder_t* encoder);
 
 #endif
+

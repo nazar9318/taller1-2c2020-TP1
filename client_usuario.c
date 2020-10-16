@@ -19,11 +19,11 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 
 void ejecutarPrograma(usuario_t* user) {
 	if (user->cliente != NULL) {
-		char* mensaje_original = NULL;
+		unsigned char* mensaje_original = NULL;
 		mensaje_original = getRead(user->reader);
 		size_t tamanio_mensaje = getSize(user->reader);
-		char* cifrado = NULL;
-		cifrado = codificar(user->encoder, mensaje_original, tamanio_mensaje);
+		unsigned char* cifrado = NULL;
+		cifrado = encript(user->encoder, mensaje_original, tamanio_mensaje);
 		if (cifrado != NULL) {
 			enviarMensaje(user->cliente, cifrado, tamanio_mensaje);
 		}

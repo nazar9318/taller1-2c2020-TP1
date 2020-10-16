@@ -23,13 +23,13 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server);
 //Post condicion: Memoria reservada liberada
 void destruirSocket(socket_t* socket);
 
-int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio);
+int enviarMensaje(socket_t* socket, unsigned char* mensaje, size_t size);
 
 //Funcion: El server recibe el mensaje del cliente
 //Pre condicion: Ninguna
 //Post condicion: Devuelve el arreglo binario completo,
 //si se corto la comunicacion se devuelve NULL.
-int recibirMensaje(socket_t* socket, char** mensaje);
+int recibirMensaje(socket_t* socket, unsigned char** mensaje);
 
 socket_t* aceptar(socket_t* socket);
 

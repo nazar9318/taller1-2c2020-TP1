@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 typedef struct{
     FILE* file;
@@ -13,7 +12,7 @@ typedef struct{
 
 file_reader_t* crearFileReader(FILE* file);
 
-char* getRead(file_reader_t* reader);
+unsigned char* getRead(file_reader_t* reader);
 
 size_t getSize(file_reader_t* crearFileReader);
 

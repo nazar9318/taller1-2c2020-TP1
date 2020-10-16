@@ -2,14 +2,13 @@
 
 void leerArchivo(file_reader_t* file_reader) {
 	int buff = file_reader->tamanio;
-	FILE* file = file_reader->file;
-	if(fgets(file_reader->buffer, buff, file) != NULL) {
-		if (strchr(file_reader->buffer, '\n') == NULL && !feof(file)) {
-			while (strchr(file_reader->buffer, '\n') == NULL && !feof(file)) {
-				fseek(file, -(buff-1), SEEK_CUR);
+	if(fgets(file_reader->buffer, buff, file_reader->file) != NULL) {
+		if (strchr(file_reader->buffer, '\n') == NULL && !feof(file_reader->file)) {
+			while (strchr(file_reader->buffer, '\n') == NULL && !feof(file_reader->file)) {
+				fseek(file_reader->file, -(buff-1), SEEK_CUR);
 				buff+=32;
 				file_reader->buffer = realloc(file_reader->buffer, buff);
-				file_reader->buffer = fgets(file_reader->buffer, buff, file);
+				file_reader->buffer = fgets(file_reader->buffer, buff, file_reader->file);
 			}
 		}
 	} else {
@@ -28,8 +27,8 @@ file_reader_t* crearFileReader(FILE* file) {
     return file_reader;
 }
 
-char* getRead(file_reader_t* file_reader) {
-	return file_reader->buffer;
+unsigned char* getRead(file_reader_t* file_reader) {
+	return (unsigned char*)file_reader->buffer;
 }
 
 size_t getSize(file_reader_t* file_reader) {
