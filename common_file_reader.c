@@ -2,13 +2,15 @@
 
 void leerArchivo(file_reader_t* file_reader) {
 	int buff = file_reader->tamanio;
+	bool fin_archivo = feof(file_reader->file);
 	if(fgets(file_reader->buffer, buff, file_reader->file) != NULL) {
-		if (strchr(file_reader->buffer, '\n') == NULL && !feof(file_reader->file)) {
-			while (strchr(file_reader->buffer, '\n') == NULL && !feof(file_reader->file)) {
+		if (strchr(file_reader->buffer, '\n') == NULL && !fin_archivo) {
+			while (strchr(file_reader->buffer, '\n') == NULL && !fin_archivo) {
 				fseek(file_reader->file, -(buff-1), SEEK_CUR);
 				buff+=32;
 				file_reader->buffer = realloc(file_reader->buffer, buff);
 				file_reader->buffer = fgets(file_reader->buffer, buff, file_reader->file);
+				fin_archivo = feof(file_reader->file);
 			}
 		}
 	} else {
