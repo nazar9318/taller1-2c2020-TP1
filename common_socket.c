@@ -114,7 +114,8 @@ socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 }
 
 int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
-	int total, sent = 0;
+	int total = 0;
+	int sent = 0;
 	int fd = socket->fd;
 	while (total < tamanio) {
 		sent = send(fd, mensaje+total, tamanio-total, MSG_NOSIGNAL);
@@ -125,7 +126,8 @@ int enviarMensaje(socket_t* socket, char* mensaje, size_t tamanio) {
 }
 
 int recibirMensaje(socket_t* socket, char** mensaje) {
-	int received, total_received = 0;
+	int received = 0;
+	int total_received = 0;
 	int cur_size = 1;
     *mensaje = malloc(cur_size);
 	do {
