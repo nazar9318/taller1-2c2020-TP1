@@ -9,12 +9,22 @@ void elegirEncriptador(usuario_t* user) {
 }
 
 usuario_t* crearUsuario(int argc, char *argv[]) {
-    usuario_t* user = malloc(sizeof(usuario_t));
-    user->cliente = crearSocket(argv[1], argv[2], false);
-    user->selector = crearSelector(argv[3], argv[4]);
-    user->reader = crearFileReader(stdin);
-    elegirEncriptador(user);
-    return user;
+	if (argc > 4 && argc < 7) {
+		usuario_t* user = malloc(sizeof(usuario_t));
+		user->cliente = crearSocket(argv[1], argv[2], false);
+		user->selector = crearSelector(argv[3], argv[4]);
+		if (argc == 6) {
+			FILE* fp = fopen(argv[5], "r");
+			user->reader = crearFileReader(fp);
+		} else {
+			user->reader = crearFileReader(stdin);
+		}
+		elegirEncriptador(user);
+		return user;
+	} else {
+		printf("La cantidad de argumentos insertados es incorrecta.\n");
+		return NULL;
+	}
 }
 
 void ejecutarPrograma(usuario_t* user) {
