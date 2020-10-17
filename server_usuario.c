@@ -30,7 +30,11 @@ void ejecutarPrograma(usuario_t* user) {
 			if ((aceptado) != NULL) {
 				int tamanio_mensaje = 0;
 				tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
-				printf("%s\n", encript(user->encoder, mensaje, tamanio_mensaje));
+				unsigned char* traduccion = NULL;
+				traduccion = encript(user->encoder, mensaje, tamanio_mensaje);
+				if (traduccion != NULL) {
+					printf("%s\n", traduccion);
+				}
 				destruirSocket(aceptado);
 			}
 		}
