@@ -3,16 +3,13 @@
 void leerArchivo(file_reader_t* file_reader) {
 	size_t buff = file_reader->tamanio;
 	FILE* file = file_reader->file;
-	fseek(file, 0, SEEK_SET);
 	size_t read = fread(file_reader->buffer, 1, buff, file);
 	if(read == buff) {
 		while (!feof(file)) {
 			fseek(file, 0, SEEK_SET);
 			buff+=64;
-			char* aux = calloc(buff, sizeof(char));
-			memcpy(aux, file_reader->buffer, read);
 			free(file_reader->buffer);
-			file_reader->buffer = aux;
+			file_reader->buffer = calloc(buff, sizeof(char));
 			read = fread(file_reader->buffer, 1, buff, file);
 		}
 	} else if (!feof(file)) {
