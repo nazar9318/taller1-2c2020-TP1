@@ -15,30 +15,42 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 		user->selector = crearSelector(argv[2], argv[3]);
 		elegirTraductor(user);
 		return user;
-	} else {
-		printf("La cantidad de argumentos insertados es incorrecta.\n");
-		return NULL;
 	}
+	printf("La cantidad de argumentos insertados es incorrecta.\n");
+	return NULL;
+}
+
+void traducir(encoder_t* encoder, unsigned char* mensaje, size_t size) {
+	unsigned char* traduccion = NULL;
+	traduccion = encript(encoder, mensaje, size);
+	if (traduccion != NULL) {
+		printf("%s\n", traduccion);
+	}
+}
+
+void ejecutar(usuario_t* user, socket_t* aceptado) {
+	if (aceptado != NULL) {
+		unsigned char* mensaje = NULL;
+		int tamanio_mensaje = 0;
+		tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
+		traducir(user->encoder, mensaje, tamanio_mensaje);
+		destruirSocket(aceptado);
+		free(mensaje);
+	}
+}
+
+socket_t* comunicarConSocket(usuario_t* user) {
+	socket_t* aceptado = NULL;
+	if (escuchar(user->server) == 0) {
+		aceptado = aceptar(user->server);
+	}
+	return aceptado;
 }
 
 void ejecutarPrograma(usuario_t* user) {
 	if (user != NULL) {
-		unsigned char* mensaje = NULL;
-		socket_t* aceptado = NULL;
-		if (escuchar(user->server) == 0) {
-			aceptado = aceptar(user->server);
-			if ((aceptado) != NULL) {
-				int tamanio_mensaje = 0;
-				tamanio_mensaje = recibirMensaje(aceptado, &mensaje);
-				unsigned char* traduccion = NULL;
-				traduccion = encript(user->encoder, mensaje, tamanio_mensaje);
-				if (traduccion != NULL) {
-					printf("%s\n", traduccion);
-				}
-				destruirSocket(aceptado);
-			}
-		}
-		free(mensaje);
+		socket_t* aceptado = comunicarConSocket(user);
+		ejecutar(user, aceptado);
 	}
 }
 

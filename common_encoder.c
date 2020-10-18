@@ -31,55 +31,65 @@ unsigned char* vigenere(encoder_t* encoder, unsigned char* msje, size_t size) {
 	return msje;
 }
 
-unsigned char* rC4(encoder_t* encoder, unsigned char* msje, size_t size) {
-	unsigned char s_box[256];
-	char *key = encoder->key;
-	unsigned int i;
-	for (i = 0; i < 256; i++) {
+void swap(unsigned char* s_box, unsigned int pos_a, unsigned int pos_b) {
+	unsigned char aux;
+	aux = s_box[pos_a];
+	s_box[pos_a] = s_box[pos_b];
+	s_box[pos_b] = aux;
+}
+
+void codificarSBOX(unsigned char* s_box, char* key) {
+	unsigned int j = 0;
+	for (unsigned int i = 0; i < 256; i++) {
+		j = (j + s_box[i] + key[i % strlen(key)]) % 256;
+		swap(s_box, i, j);
+	}
+}
+
+void inicializarSBOX(unsigned char* s_box) {
+	for (unsigned int i = 0; i < 256; i++) {
 		s_box[i] = i;
 	}
-	unsigned int j = 0;
-	char aux;
-	for (i = 0; i < 256; i++) {
-		j = (j + s_box[i] + key[i % strlen(key)]) % 256;
-		aux = s_box[i];
-		s_box[i] = s_box[j];
-		s_box[j] = aux;
-	}
-	i = 0;
-	j = 0;
+}
+
+unsigned char* rC4(encoder_t* encoder, unsigned char* msje, size_t size) {
+	unsigned char s_box[256];
+	inicializarSBOX(s_box);
+	codificarSBOX(s_box, encoder->key);
+	unsigned int i, j, t = 0;
 	for (int k = 0; k < size; k++) {
 		i = (i + 1) % 256;
 		j = (j + s_box[i]) % 256;
-		aux = s_box[i];
-		s_box[i] = s_box[j];
-		s_box[j] = aux;	
-		unsigned int t = (s_box[i] + s_box[j]) % 256;
+		swap(s_box, i, j);
+		t = (s_box[i] + s_box[j]) % 256;
 		msje[k] = (msje[k] ^ (s_box[t]));
 	}
 	return msje;
 }
 
-unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size) {
-	if (size < 0) {
-		printf("Error, el mensaje a codificar es inválido\n");
+unsigned char* select(encoder_t* encoder, unsigned char* msje, int size) {
+	if (strcmp(encoder->method, "cesar") == 0) {
+		return cesar(encoder, msje, size);
+	} else if (strcmp(encoder->method, "vigenere") == 0) {
+		return vigenere(encoder, msje, size);
+	} else if (strcmp(encoder->method, "rc4") == 0) {
+		return rC4(encoder, msje, size);
+	}
+	printf("El metodo de codificacion provisto es incorrecto\n");
+	return NULL;
+}
+
+unsigned char* codificar(encoder_t* encoder, unsigned char* msje, int size) {
+	if (encoder->key == NULL) {
+		printf("Error, la clave de codificacion es incorrecta\n");
 		return NULL;
-	} else {
-		if (encoder->key == NULL) {
-			printf("Error, la clave de codificacion es incorrecta\n");
-			return NULL;
-		} else {
-			if (strcmp(encoder->method, "cesar") == 0) {
-				return cesar(encoder, msje, size);
-			} else if (strcmp(encoder->method, "vigenere") == 0) {
-				return vigenere(encoder, msje, size);
-			} else if (strcmp(encoder->method, "rc4") == 0) {
-				return rC4(encoder, msje, size);
-			} else {
-				printf("El metodo de codificacion provisto es incorrecto\n");
-				return NULL;
-			}
-		}
+	}
+	return select(encoder, msje, size);
+}
+
+unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size) {
+	if (size > 0) {
+		return codificar(encoder, msje, size);
 	}
 	printf("Error, el mensaje a codificar es inválido\n");
 	return NULL;

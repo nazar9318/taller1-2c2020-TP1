@@ -141,7 +141,7 @@ int enviarMensaje(socket_t* socket, unsigned char* mensaje, size_t size) {
 int recibirMensaje(socket_t* socket, unsigned char** mensaje) {
 	int received, total_received = 0;
 	int cur_size = 1;
-        *mensaje = malloc(1);
+    *mensaje = malloc(1);
 	do {
 		if (total_received >= cur_size) {
 			cur_size += total_received;

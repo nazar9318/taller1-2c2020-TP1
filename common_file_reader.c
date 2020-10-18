@@ -41,4 +41,3 @@ void destruirFileReader(file_reader_t* file_reader) {
     free(file_reader->buffer);
     free(file_reader);
 }
-

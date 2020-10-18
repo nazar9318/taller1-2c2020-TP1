@@ -4,15 +4,13 @@
 
 selector_t* crearSelector(char* arg_method, char* arg_key) {
 	selector_t* selector = malloc(sizeof(selector_t));
-	if (strstr(arg_method, "--method") == NULL) {
-		selector->method = NULL;
-	} else {
+	selector->key = NULL;
+	selector->method = NULL;
+	if (strstr(arg_method, "--method=") != NULL) {
 		selector->method = calloc(strlen(arg_method) - METH_LEN+1, sizeof(char));
 		strncpy(selector->method, arg_method+METH_LEN, strlen(arg_method) - METH_LEN);
 	}
-	if (strstr(arg_key, "--key") == NULL) {
-		selector->key = NULL;
-	} else {
+	if (strstr(arg_key, "--key=") != NULL) {
 		selector->key = calloc(strlen(arg_key) - KEY_LEN+1, sizeof(char));
 		strncpy(selector->key, arg_key + KEY_LEN, strlen(arg_key) -KEY_LEN);
 	}
