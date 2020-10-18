@@ -56,12 +56,13 @@ unsigned char* rC4(encoder_t* encoder, unsigned char* msje, size_t size) {
 	unsigned char s_box[256];
 	inicializarSBOX(s_box);
 	codificarSBOX(s_box, encoder->key);
-	unsigned int i, j, t = 0;
+	unsigned int i = 0;
+	unsigned int j = 0;
 	for (int k = 0; k < size; k++) {
 		i = (i + 1) % 256;
 		j = (j + s_box[i]) % 256;
 		swap(s_box, i, j);
-		t = (s_box[i] + s_box[j]) % 256;
+		unsigned int t = (s_box[i] + s_box[j]) % 256;
 		msje[k] = (msje[k] ^ (s_box[t]));
 	}
 	return msje;
