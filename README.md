@@ -1,11 +1,11 @@
-#Informe: Trabajo Práctico N°1: Crypto-Sockets
+# Informe: Trabajo Práctico N°1: Crypto-Sockets
 Alumno: Federico Elías
 
 Padrón: 96105
 
 Fecha de entrega: 20/10/2020
 
-#Division de responsabilidades
+# Division de responsabilidades
 
 Mains:
 
@@ -95,4 +95,5 @@ Las responsabilidades del programa se dividieron en los siguientes TDAs:
 
 
 - Diagrama que representa la división de responsabilidades de los TDAs:
+
 ![diagrama](https://github.com/nazar9318/taller1-2c2020-TP1/tree/master/assets/DiagramaTP1.png)
