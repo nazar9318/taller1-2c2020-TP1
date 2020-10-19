@@ -96,4 +96,4 @@ Las responsabilidades del programa se dividieron en los siguientes TDAs:
 
 - Diagrama que representa la división de responsabilidades de los TDAs:
 
-![diagrama](https://github.com/nazar9318/taller1-2c2020-TP1/tree/master/assets/DiagramaTP1.png)
+![diagrama](https://github.com/nazar9318/taller1-2c2020-TP1/blob/master/assets/DiagramaTP1.png)
