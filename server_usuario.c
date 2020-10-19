@@ -22,7 +22,7 @@ usuario_t* crearUsuario(int argc, char *argv[]) {
 
 void traducir(encoder_t* encoder, unsigned char* mensaje, size_t size) {
 	unsigned char* traduccion = NULL;
-	traduccion = encript(encoder, mensaje, size);
+	traduccion = encriptar(encoder, mensaje, size);
 	if (traduccion != NULL) {
 		printf("%s\n", traduccion);
 	}

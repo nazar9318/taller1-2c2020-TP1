@@ -19,7 +19,7 @@ encoder_t* crearEncoder(char* method, char* key, bool es_encriptador);
 //Funcion: Encripta o traduce el parámetro msje de tamaño size.
 //Pre condicion: Encoder previamente creado.
 //Post condicion: Ninguna
-unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size);
+unsigned char* encriptar(encoder_t* encoder, unsigned char* msje, int size);
 
 //Funcion: Libera la memoria reservada para el encoder
 //Pre condicion: Encoder previamente creado.

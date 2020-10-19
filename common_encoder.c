@@ -20,11 +20,12 @@ unsigned char* cesar(encoder_t* encoder, unsigned char* msje, size_t size) {
 unsigned char* vigenere(encoder_t* encoder, unsigned char* msje, size_t size) {
 	size_t buff_key = 0;
 	bool tipo = encoder->es_encriptador;
+	char key_char;
 	for (int i = 0; i < size; i++) {
 		if ((i + buff_key) >= strlen(encoder->key)) {
 			buff_key -= strlen(encoder->key);
 		}
-		char key_char = encoder->key[i + buff_key];
+		key_char = encoder->key[i + buff_key];
 		unsigned char buffer = tipo ? key_char : (256 - key_char);
 		msje[i] += buffer;
 	}
@@ -68,13 +69,13 @@ unsigned char* rC4(encoder_t* encoder, unsigned char* msje, size_t size) {
 	return msje;
 }
 
-unsigned char* select(encoder_t* encoder, unsigned char* msje, int size) {
-	if (strcmp(encoder->method, "cesar") == 0) {
-		return cesar(encoder, msje, size);
-	} else if (strcmp(encoder->method, "vigenere") == 0) {
-		return vigenere(encoder, msje, size);
-	} else if (strcmp(encoder->method, "rc4") == 0) {
-		return rC4(encoder, msje, size);
+unsigned char* elegirMetodo(encoder_t* coder, unsigned char* msje, int size) {
+	if (strcmp(coder->method, "cesar") == 0) {
+		return cesar(coder, msje, size);
+	} else if (strcmp(coder->method, "vigenere") == 0) {
+		return vigenere(coder, msje, size);
+	} else if (strcmp(coder->method, "rc4") == 0) {
+		return rC4(coder, msje, size);
 	}
 	printf("El metodo de codificacion provisto es incorrecto\n");
 	return NULL;
@@ -85,10 +86,10 @@ unsigned char* codificar(encoder_t* encoder, unsigned char* msje, int size) {
 		printf("Error, la clave de codificacion es incorrecta\n");
 		return NULL;
 	}
-	return select(encoder, msje, size);
+	return elegirMetodo(encoder, msje, size);
 }
 
-unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size) {
+unsigned char* encriptar(encoder_t* encoder, unsigned char* msje, int size) {
 	if (size > 0) {
 		return codificar(encoder, msje, size);
 	}
@@ -99,4 +100,3 @@ unsigned char* encript(encoder_t* encoder, unsigned char* msje, int size) {
 void destruirEncoder(encoder_t* encoder) {
     free(encoder);
 }
-
