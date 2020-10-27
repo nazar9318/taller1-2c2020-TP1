@@ -1,53 +1,44 @@
 #include "client_usuario.h"
 
-void elegirEncriptador(usuario_t* user) {
+static void user_chooseEncoder(user_t* user) {
 	char* method = NULL;
-	method = devolverMetodo(user->selector);
+	method = selector_getMethod(user->selector);
 	char* key = NULL;
-	key = devolverClave(user->selector);
-	user->encoder = crearEncoder(method, key, true);
+	key = selector_getKey(user->selector);
+	user->encoder = encoder_create(method, key, true);
 }
 
-void abrirArchivo(usuario_t* user, int argc, char* argv[]) {
-	if (argc == 6) {
-		FILE* fp = fopen(argv[5], "r");
-		user->reader = crearFileReader(fp);
-	} else {
-		user->reader = crearFileReader(stdin);
-	}
-}
-
-usuario_t* crearUsuario(int argc, char *argv[]) {
+user_t* user_create(int argc, char *argv[]) {
 	if (argc > 4 && argc < 7) {
-		usuario_t* user = malloc(sizeof(usuario_t));
+		user_t* user = malloc(sizeof(user_t));
+		user->reader = reader_create(stdin);
 		user->cliente = crearSocket(argv[1], argv[2], false);
-		user->selector = crearSelector(argv[3], argv[4]);
-		abrirArchivo(user, argc, argv);
-		elegirEncriptador(user);
+		user->selector = selector_create(argv[3], argv[4]);
+		user_chooseEncoder(user);
 		return user;
 	}
 	printf("La cantidad de argumentos insertados es incorrecta.\n");
 	return NULL;
 }
 
-void ejecutarPrograma(usuario_t* user) {
+void user_run(user_t* user) {
 	if (user != NULL && user->cliente != NULL) {
 		unsigned char* mensaje_original = NULL;
-		mensaje_original = getRead(user->reader);
-		size_t tamanio = getSize(user->reader);
+		mensaje_original = reader_getRead(user->reader);
+		size_t tamanio = reader_getSize(user->reader);
 		unsigned char* cifrado = NULL;
-		cifrado = encriptar(user->encoder, mensaje_original, tamanio);
+		cifrado = encoder_encode(user->encoder, mensaje_original, tamanio);
 		if (cifrado != NULL) {
 			enviarMensaje(user->cliente, cifrado, tamanio);
 		}
 	}
 }
 
-void destruirUsuario(usuario_t* user) {
+void user_destroy(user_t* user) {
 	if (user != NULL) {
-		destruirSelector(user->selector);
-		destruirEncoder(user->encoder);
-		destruirFileReader(user->reader);
+		selector_destroy(user->selector);
+		encoder_destroy(user->encoder);
+		reader_destroy(user->reader);
 		destruirSocket(user->cliente);
 		free(user);
 	}

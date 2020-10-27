@@ -8,26 +8,26 @@ typedef struct{
     FILE* file;
     size_t tamanio;
     char* buffer;
-}file_reader_t;
+}reader_t;
 
 //Funcion: Crea un tipo de dato file_reder.
 //Pre condicion: File previamente abierto.
 //Post condicion: Devuelve una referencia al file reader creado.
-file_reader_t* crearFileReader(FILE* file);
+reader_t* reader_create(FILE* file);
 
 //Funcion: Devuelve la lectura completa del archivo.
 //Pre condicion: File_reader previamente creado.
 //Post condicion: Devuelve un arreglo de unsigned chars
-unsigned char* getRead(file_reader_t* reader);
+unsigned char* reader_getRead(reader_t* self);
 
 //Funcion: Devuelve el tamanio de la lectura
 //Pre condicion: File_reader previamente creado.
 //Post condicion: Ninguna
-size_t getSize(file_reader_t* crearFileReader);
+size_t reader_getSize(reader_t* self);
 
 //Funcion: Libera la memoria reservada para el file reader
 //Pre condicion: File_reader previamente creado.
 //Post condicion: Memoria liberada.
-void destruirFileReader(file_reader_t* file_reader);
+void reader_destroy(reader_t* self);
 
 #endif

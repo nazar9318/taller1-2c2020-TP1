@@ -10,6 +10,7 @@
 
 typedef struct{
 	int fd;
+	bool es_server;
 }socket_t;
 
 //Funcion: Crea un tipo de dato socket

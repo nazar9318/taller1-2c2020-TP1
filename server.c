@@ -2,8 +2,8 @@
 #include "server_usuario.h"
 
 int main(int argc, char* argv[]) {
-	usuario_t* user = crearUsuario(argc, argv);
-	ejecutarPrograma(user);
-	destruirUsuario(user);
+	user_t* user = user_create(argc, argv);
+	user_run(user);
+	user_destroy(user);
 	return 0;
 }

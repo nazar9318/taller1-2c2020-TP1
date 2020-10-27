@@ -9,21 +9,21 @@ typedef struct{
     socket_t* server;
     encoder_t* encoder;
     selector_t* selector;
-}usuario_t;
+}user_t;
 
 //Funcion: Crea un tipo de dato cliente usuario
 //Pre condicion: Ninguna
 //Post condicion: Devuelve una referencia al cliente_usuario creado.
-usuario_t* crearUsuario(int argc, char *argv[]);
+user_t* user_create(int argc, char *argv[]);
 
 //Funcion: Ejecuta el flujo del programa completo
 //Pre condicion: User previamente creado.
 //Post condicion: Ninguna
-void ejecutarPrograma(usuario_t* user);
+void user_run(user_t* user);
 
 //Funcion: Libera la memoria reservada.
 //Pre condicion: User previamente creado
 //Post condicion: Memoria liberada
-void destruirUsuario(usuario_t* user);
+void user_destroy(user_t* user);
 
 #endif

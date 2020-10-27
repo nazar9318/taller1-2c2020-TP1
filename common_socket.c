@@ -4,17 +4,10 @@
 #include <string.h>
 #include <unistd.h>
 
-void destruirSocket(socket_t* socket) {
-	if (socket != NULL) {
-		close(socket->fd);
-	}
-	free(socket);
-}
-
 //Funcion: Enlaza al socket con la direccion pasada por parametro
 //Pre condicion: Ninguna.
 //Post condicion: Si falla al enlazar cierra el file descriptor
-int enlazar(socket_t* socket, struct addrinfo* dir) {
+static int enlazar(socket_t* socket, struct addrinfo* dir) {
 	int fd = socket->fd;
 	if (bind(fd, dir->ai_addr, dir->ai_addrlen) == -1) {
 		printf("Error, servidor no pudo enlazar: %s\n", strerror(errno));
@@ -27,7 +20,7 @@ int enlazar(socket_t* socket, struct addrinfo* dir) {
 //Funcion: Conecta al socket con la direccion pasada por parametro
 //Pre condicion: Ninguna.
 //Post condicion: Si falla al enlazar cierra el file descriptor
-int conectar(socket_t* socket, struct addrinfo* dir) {
+static int conectar(socket_t* socket, struct addrinfo* dir) {
 	int fd = socket->fd;
 	if (connect(fd, dir->ai_addr, dir->ai_addrlen) == -1) {
 		printf("Error, cliente no pudo conectar: %s\n", strerror(errno));
@@ -37,29 +30,46 @@ int conectar(socket_t* socket, struct addrinfo* dir) {
 	return 0;
 }
 
+static socket_t* bindConnect(socket_t* sckt, struct addrinfo* dir) {
+	if (sckt->es_server) {
+		if (enlazar(sckt, dir) == 0) {
+			freeaddrinfo(dir);
+			return sckt;
+		}
+	} else {
+		if (conectar(sckt, dir) == 0) {
+			freeaddrinfo(dir);
+			return sckt;
+		}
+	}
+	freeaddrinfo(dir);
+	free(sckt);
+	return NULL;
+}
+
 //Funcion: crea el socket usando las direcciones pasadas por parametro.
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
-struct addrinfo* setFileDescriptor(socket_t* t_socket, struct addrinfo *dirs) {
+static socket_t* setFileDescriptor(socket_t* sckt, struct addrinfo *dirs) {
 	struct addrinfo *count = NULL;
 	count = dirs;
 	while (count != NULL) {
-		t_socket->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
-		if (t_socket->fd == -1) {
-			printf("Error, no se pudo crear el socket: %s\n", strerror(errno));
-			return NULL;
+		sckt->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
+		if (bindConnect(sckt, count) == NULL) {
+			close(sckt->fd);
+			free(sckt);
+			count = count->ai_next;
 		} else {
-			return count;
+			return sckt;
 		}
-		count = count->ai_next;
 	}
-	return count;
+	return NULL;
 }
 
 //Funcion: Completa los criterios de direccion para un server
 //Pre condicion: Ninguna
 //Post condicion: Ninguna
-struct addrinfo setAddressCriteria(bool es_server) {
+static struct addrinfo setAddressCriteria(bool es_server) {
 	struct addrinfo criteria;
 	memset(&criteria, 0, sizeof(struct addrinfo));
 	criteria.ai_family = AF_INET;		//Permite IPv4
@@ -72,7 +82,7 @@ struct addrinfo setAddressCriteria(bool es_server) {
 //Pre condicion: Puerto debe ser existente.
 //Post condicion: Si getaddrinfo falla se libera la memoria, pero en caso 
 //de tener exito debe ser el llamador el que libere la memoria reservada.
-struct addrinfo* crearDirecciones(char* host, char* port, bool es_server) {
+static struct addrinfo* crearDirecciones(char* host, char* port, bool es_server) {
 	int error = 0;
 	struct addrinfo criteria = setAddressCriteria(es_server);
 	struct addrinfo *direcciones;
@@ -91,33 +101,13 @@ socket_t* crearSocketAceptado(int file_descriptor) {
 	return socket;
 }
 
-socket_t* bindConnect(socket_t* sckt, struct addrinfo* dir, bool es_server) {
-	if (es_server) {
-		if (enlazar(sckt, dir) == 0) {
-			freeaddrinfo(dir);
-			return sckt;
-		}
-	} else {
-		if (conectar(sckt, dir) == 0) {
-			freeaddrinfo(dir);
-			return sckt;
-		}
-	}
-	freeaddrinfo(dir);
-	free(sckt);
-	return NULL;
-}
-
 socket_t* crearSocket(char* host, char* puerto, bool es_server) {
 	socket_t* socket = malloc(sizeof(socket_t));
+	socket->es_server = es_server;
 	struct addrinfo *direcciones = NULL;
-	direcciones = crearDirecciones(host, puerto, es_server);
+	direcciones = crearDirecciones(host, puerto, socket->es_server);
 	if (direcciones != NULL) {
-		struct addrinfo* direccion_aceptada = NULL;
-		direccion_aceptada = setFileDescriptor(socket, direcciones);
-		if (direccion_aceptada != NULL) {
-			return bindConnect(socket, direccion_aceptada, es_server);
-		}
+		return setFileDescriptor(socket, direcciones);
 	}
 	freeaddrinfo(direcciones);
 	free(socket);
@@ -178,3 +168,9 @@ socket_t* aceptar(socket_t* socket) {
 	return crearSocketAceptado(aceptado);
 }
 
+void destruirSocket(socket_t* socket) {
+	if (socket != NULL) {
+		close(socket->fd);
+	}
+	free(socket);
+}
