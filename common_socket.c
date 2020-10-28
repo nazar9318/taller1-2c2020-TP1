@@ -106,9 +106,10 @@ void socket_create(socket_t* self, char* host, char* port, bool is) {
 }
 
 int socket_send(socket_t* self, unsigned char* mensaje, size_t size) {
+	int sent = 0;
 	int total = 0;
 	while (total < size) {
-		int sent = send(self->fd, mensaje + total, size - total, MSG_NOSIGNAL);
+		sent = send(self->fd, mensaje + total, size - total, MSG_NOSIGNAL);
 		if (sent == -1) {
 			return -1;
 		} else {
@@ -120,12 +121,8 @@ int socket_send(socket_t* self, unsigned char* mensaje, size_t size) {
 
 int socket_receive(socket_t* self, unsigned char* mensaje, size_t len) {
 	int received = 0;
-	int total = 0;
-	do {
-		received = recv(self->fd, mensaje + total, len, 0);
-		total += received;
-	} while (received > 0);
-	return total;
+	received = recv(self->fd, mensaje, len, 0);
+	return received;
 }
 
 void socket_accept(socket_t* accepted, socket_t* self) {

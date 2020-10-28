@@ -35,7 +35,7 @@ void user_run(user_t* user) {
 		while (!reader_EOF(&user->reader)) {
 			unsigned char msje[64];
 			reader_readFile(&user->reader, msje);
-			encoder_run(&user->encoder, msje, 64);
+			encoder_run(&user->encoder, msje, reader_getRead(&user->reader));
 			int send = socket_send(&user->cliente, msje, reader_getRead(&user->reader));
 			if (send == -1) {
 				printf("Error al enviar mensaje\n");
