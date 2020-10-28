@@ -5,7 +5,7 @@ static void user_chooseTranslator(user_t* user) {
     method = selector_getMethod(&user->selector);
     char* key = NULL;
     key = selector_getKey(&user->selector);
-    user->encoder = encoder_create(method, key, false);
+    encoder_create(&user->encoder, method, key, false);
 }
 
 user_t* user_create(int argc, char *argv[]) {
@@ -15,19 +15,14 @@ user_t* user_create(int argc, char *argv[]) {
 			printf("Fallo al alocar memoria para el user\n");
 			return NULL;
 		}
-		user->server = socket_create(NULL, argv[1], true);
-		if (user->server == NULL) {
+		socket_create(&user->server, NULL, argv[1], true);
+		if (&user->server == NULL) {
 			printf("Fallo al crear server\n");
 			user_destroy(user);
 			return NULL;
 		}
 		selector_create(&user->selector, argv[2], argv[3]);
 		user_chooseTranslator(user);
-		if (user->encoder == NULL) {
-			printf("Fallo al crear encoder\n");
-			user_destroy(user);
-			return NULL;
-		}
 		return user;
 	}
 	printf("La cantidad de argumentos insertados es incorrecta.\n");
@@ -36,7 +31,7 @@ user_t* user_create(int argc, char *argv[]) {
 
 static void user_translate(user_t* self, unsigned char* msje, size_t len) {
 	if (len > 0) {
-		encoder_run(self->encoder, msje, len);
+		encoder_run(&self->encoder, msje, len);
 	}
 }
 
@@ -57,32 +52,26 @@ static void user_execute(user_t* user, socket_t* aceptado) {
 	}
 }
 
-static socket_t* user_connectClient(user_t* user) {
-	socket_t* aceptado = NULL;
-	if (socket_listen(user->server) == 0) {
-		aceptado = socket_accept(user->server);
+static void user_connectClient(socket_t* aceptado, user_t* user) {
+	if (socket_listen(&user->server) == 0) {
+		socket_accept(aceptado, &user->server);
 	} else {
 		printf("Error al escuchar al cliente\n");
-		return NULL;
 	}
-	return aceptado;
 }
 
 void user_run(user_t* user) {
 	if (user != NULL) {
-		socket_t* aceptado = user_connectClient(user);
-		if (aceptado != NULL) {
-			user_execute(user, aceptado);
-		} else {
-			printf("Error al aceptar al cliente\n");
-		}
+		socket_t aceptado;
+		user_connectClient(&aceptado, user);
+		user_execute(user, &aceptado);
 	}
 }
 
 void user_destroy(user_t* user) {
 	if (user != NULL) {
-		socket_destroy(user->server);
-		encoder_destroy(user->encoder);
+		socket_destroy(&user->server);
+		encoder_destroy(&user->encoder);
 		selector_destroy(&user->selector);
 		free(user);
 	}

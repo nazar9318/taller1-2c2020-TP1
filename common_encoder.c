@@ -1,15 +1,9 @@
 #include "common_encoder.h"
 
-encoder_t* encoder_create(char* method, char* key, bool is_crypter) {
-	encoder_t* encoder = malloc(sizeof(encoder_t));
-	if (encoder == NULL) {
-		printf("Fallo al alocar memoria para el encoder\n");
-		return NULL;
-	}
-	encoder->key = key;
-	encoder->method = method;
-	encoder->is_crypter = is_crypter;
-	return encoder;
+void encoder_create(encoder_t* self, char* method, char* key, bool is) {
+	self->key = key;
+	self->method = method;
+	self->is_crypter = is;
 }
 
 /*static unsigned char* encoder_cesar(encoder_t* self, unsigned char* msje, size_t len) {
@@ -126,8 +120,4 @@ void encoder_run(encoder_t* self, unsigned char* msje, int size) {
 	}
 }
 
-void encoder_destroy(encoder_t* encoder) {
-	if (encoder != NULL) {
-		free(encoder);
-	}
-}
+void encoder_destroy(encoder_t* encoder) {}

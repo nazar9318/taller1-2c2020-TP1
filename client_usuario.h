@@ -6,8 +6,8 @@
 #include "common_file_reader.h"
 
 typedef struct{
-    socket_t* cliente;
-    encoder_t* encoder;
+    socket_t cliente;
+    encoder_t encoder;
     selector_t selector;
     reader_t reader;
 }user_t;

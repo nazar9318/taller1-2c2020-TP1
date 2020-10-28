@@ -5,7 +5,7 @@ static void user_chooseEncoder(user_t* user) {
 	method = selector_getMethod(&user->selector);
 	char* key = NULL;
 	key = selector_getKey(&user->selector);
-	user->encoder = encoder_create(method, key, true);
+	encoder_create(&user->encoder, method, key, true);
 }
 
 user_t* user_create(int argc, char *argv[]) {
@@ -16,19 +16,14 @@ user_t* user_create(int argc, char *argv[]) {
 			return NULL;
 		}
 		reader_create(&user->reader, stdin);
-		user->cliente = socket_create(argv[1], argv[2], false);
-		if (user->cliente == NULL) {
+		socket_create(&user->cliente, argv[1], argv[2], false);
+		if (&user->cliente == NULL) {
 			printf("Fallo al crear el socket cliente\n");
 			user_destroy(user);
 			return NULL;
 		}
 		selector_create(&user->selector, argv[3], argv[4]);
 		user_chooseEncoder(user);
-		if (user->encoder == NULL) {
-			printf("Fallo al crear el encoder\n");
-			user_destroy(user);
-			return NULL;
-		}
 		return user;
 	}
 	printf("La cantidad de argumentos insertados es incorrecta.\n");
@@ -36,13 +31,13 @@ user_t* user_create(int argc, char *argv[]) {
 }
 
 void user_run(user_t* user) {
-	if (user != NULL && user->cliente != NULL) {
+	if (user != NULL && &user->cliente != NULL) {
 		while (!reader_EOF(&user->reader)) {
-			unsigned char* mensaje = NULL;
-			mensaje = reader_readFile(&user->reader);
+			unsigned char mensaje[64];
+			reader_readFile(&user->reader, mensaje);
 			if (mensaje != NULL) {
-				encoder_run(user->encoder, mensaje, 64);
-				socket_send(user->cliente, mensaje, reader_getRead(&user->reader));
+				encoder_run(&user->encoder, mensaje, 64);
+				socket_send(&user->cliente, mensaje, reader_getRead(&user->reader));
 			} else {
 				printf("Fallo al leer el archivo\n");
 			}
@@ -53,9 +48,9 @@ void user_run(user_t* user) {
 void user_destroy(user_t* user) {
 	if (user != NULL) {
 		selector_destroy(&user->selector);
-		encoder_destroy(user->encoder);
+		encoder_destroy(&user->encoder);
 		reader_destroy(&user->reader);
-		socket_destroy(user->cliente);
+		socket_destroy(&user->cliente);
 		free(user);
 	}
 }

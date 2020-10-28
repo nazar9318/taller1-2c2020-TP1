@@ -6,8 +6,8 @@
 #include <stdio.h>
 
 typedef struct{
-    socket_t* server;
-    encoder_t* encoder;
+    socket_t server;
+    encoder_t encoder;
     selector_t selector;
 }user_t;
 

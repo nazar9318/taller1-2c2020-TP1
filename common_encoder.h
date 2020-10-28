@@ -17,7 +17,7 @@ typedef struct{
 //Funcion: Crea un tipo de dato encoder
 //Pre condicion: Ninguna
 //Post condicion: Devuelve una referencia al encoder creado.
-encoder_t* encoder_create(char* method, char* key, bool is_crypter);
+void encoder_create(encoder_t* self, char* method, char* key, bool is);
 
 //Funcion: Encripta o traduce el parámetro msje de tamaño size.
 //Pre condicion: Encoder previamente creado.

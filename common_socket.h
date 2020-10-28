@@ -10,14 +10,14 @@
 
 typedef struct{
 	int fd;
-	bool es_server;
+	bool is_server;
 }socket_t;
 
 //Funcion: Crea un tipo de dato socket
 //Pre condicion: El puerto y el host deben
 //existir previamente y deben estar correctamente escritos
 //Post condicion: Devuelve un puntero al socket
-socket_t* socket_create(char* host, char* puerto, bool es_server);
+void socket_create(socket_t* self, char* host, char* port, bool is);
 
 //Funcion: Envia mensaje de tamaño size al file_descriptor 
 //con el que está conectado.
@@ -34,7 +34,7 @@ int socket_receive(socket_t* self, unsigned char* mensaje, size_t len);
 //creando uno nuevo.
 //Pre condicion: Socket previamente creado.
 //Post condicion: Devuelve el socket aceptado.
-socket_t* socket_accept(socket_t* self);
+void socket_accept(socket_t* accepted, socket_t* socket);
 
 //Funcion: Server recibe y acepta una conexion del cliente
 //Pre condicion: Socket previamente creado.

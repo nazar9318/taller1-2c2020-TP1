@@ -31,7 +31,7 @@ static int socket_connect(socket_t* socket, struct addrinfo* dir) {
 }
 
 static socket_t* socket_bindConnect(socket_t* sckt, struct addrinfo* dir) {
-	if (sckt->es_server) {
+	if (sckt->is_server) {
 		if (socket_bind(sckt, dir) == 0) {
 			freeaddrinfo(dir);
 			return sckt;
@@ -43,27 +43,28 @@ static socket_t* socket_bindConnect(socket_t* sckt, struct addrinfo* dir) {
 		}
 	}
 	freeaddrinfo(dir);
-	free(sckt);
 	return NULL;
 }
 
 //Funcion: crea el socket usando las direcciones pasadas por parametro.
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
-static socket_t* socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
+static void socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
 	struct addrinfo *count = NULL;
 	count = dirs;
-	while (count != NULL) {
+	bool success = false;
+	while (count != NULL && !success) {
 		sckt->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
 		if (socket_bindConnect(sckt, count) == NULL) {
 			close(sckt->fd);
-			free(sckt);
 			count = count->ai_next;
 		} else {
-			return sckt;
+			success = true;
 		}
 	}
-	return NULL;
+	if (count == NULL && !success) {
+		sckt = NULL;
+	}
 }
 
 //Funcion: Completa los criterios de direccion para un server
@@ -95,31 +96,13 @@ static struct addrinfo* socket_setDirs(char* host, char* port, bool is) {
 	return direcciones;
 }
 
-socket_t* socket_setAccepted(int file_descriptor) {
-	socket_t* socket = malloc(sizeof(socket_t));
-	if (socket == NULL) {
-		printf("Error al alocar memoria para crear el socket aceptado\n");
-		return NULL;
-	}
-	socket->fd = file_descriptor;
-	return socket;
-}
-
-socket_t* socket_create(char* host, char* puerto, bool es_server) {
-	socket_t* socket = malloc(sizeof(socket_t));
-	if (socket == NULL) {
-		printf("Error al alocar memoria para crear el socket\n");
-		return NULL;
-	}
-	socket->es_server = es_server;
+void socket_create(socket_t* self, char* host, char* port, bool is) {
+	self->is_server = is;
 	struct addrinfo *direcciones = NULL;
-	direcciones = socket_setDirs(host, puerto, socket->es_server);
+	direcciones = socket_setDirs(host, port, self->is_server);
 	if (direcciones != NULL) {
-		return socket_setFileDesc(socket, direcciones);
+		socket_setFileDesc(self, direcciones);
 	}
-	freeaddrinfo(direcciones);
-	free(socket);
-	return NULL;
 }
 
 int socket_send(socket_t* self, unsigned char* mensaje, size_t size) {
@@ -130,23 +113,23 @@ int socket_receive(socket_t* self, unsigned char* mensaje, size_t len) {
 	return recv(self->fd, mensaje, len, 0);
 }
 
-socket_t* socket_accept(socket_t* socket) {
-	int fd = socket->fd;
-	int aceptado;
-	aceptado = accept(fd, NULL, NULL);
+void socket_accept(socket_t* accepted, socket_t* self) {
+	int aceptado = accept(self->fd, NULL, NULL);
 	if (aceptado == -1) {
 		printf("Error, servidor no puede aceptar al cliente: %s\n", strerror(errno));
-		socket_destroy(socket);
-		return NULL;
+		socket_destroy(self);
 	}
-	return socket_setAccepted(aceptado);
+	if (accepted == NULL) {
+		printf("Error al alocar memoria para crear el socket aceptado\n");
+	}
+	accepted->fd = aceptado;
 }
 
-int socket_listen(socket_t* socket) {
-	int fd = socket->fd;
+int socket_listen(socket_t* self) {
+	int fd = self->fd;
 	if (listen(fd, 1) == -1) {
 		printf("Error, servidor no puede escuchar al cliente: %s\n", strerror(errno));
-		socket_destroy(socket);
+		socket_destroy(self);
 		return -1;
 	} 
 	return 0;
@@ -156,5 +139,4 @@ void socket_destroy(socket_t* socket) {
 	if (socket != NULL) {
 		close(socket->fd);
 	}
-	free(socket);
 }
