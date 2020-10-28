@@ -37,9 +37,9 @@ static void user_translate(user_t* self, unsigned char* msje, size_t len) {
 
 static void user_execute(user_t* user, socket_t* aceptado) {
 	if (aceptado != NULL) {
-		unsigned char mensaje[64];
 		int received = 0;
 		do {
+			unsigned char mensaje[64];
 			received = socket_receive(aceptado, mensaje, 64);
 			if (received == -1) {
 				printf("Error al recibir mensaje del cliente\n");
