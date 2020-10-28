@@ -7,14 +7,13 @@
 
 typedef struct{
     char* key;
-    char* method;
     bool is_crypter;
 }cesar_t;
 
 //Funcion: Crea un tipo de dato encoder
 //Pre condicion: Ninguna
 //Post condicion: Devuelve una referencia al encoder creado.
-void cesar_create(cesar_t* self, char* method, char* key, bool is_crypter);
+cesar_t* cesar_create(char* key, bool is_crypter);
 
 //Funcion: Encripta o traduce el parámetro msje de tamaño size.
 //Pre condicion: Encoder previamente creado.

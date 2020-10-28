@@ -8,10 +8,14 @@
 #include "common_cesar.h"
 #include "common_vigenere.h"
 
+typedef enum {CESAR, VIGENERE, RC4} crypter_mode_t;
+
 typedef struct{
     char* key;
     char* method;
     bool is_crypter;
+    void* protocol;
+    crypter_mode_t mode;
 }encoder_t;
 
 //Funcion: Crea un tipo de dato encoder
@@ -30,4 +34,3 @@ void encoder_run(encoder_t* self, unsigned char* msje, int size);
 void encoder_destroy(encoder_t* self);
 
 #endif
-

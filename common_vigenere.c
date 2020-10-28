@@ -1,24 +1,26 @@
 #include "common_vigenere.h"
 
-void vigenere_create(vigenere_t* self, char* method, char* key, bool is) {
+vigenere_t* vigenere_create(char* key, bool is) {
+	vigenere_t* self = malloc(sizeof(vigenere_t));
 	self->key = key;
-	self->method = method;
 	self->is_crypter = is;
+	self->pos = 0;
+	return self;
 }
 
 static void vigenere_code(vigenere_t* self, unsigned char* msje, size_t len) {
-	size_t buff_key = 0;
 	bool tipo = self->is_crypter;
 	for (int i = 0; i < len; i++) {
-		if ((i + buff_key) >= strlen(self->key)) {
-			buff_key -= strlen(self->key);
+		if (self->pos == strlen(self->key)) {
+			self->pos = 0;
 		}
-		char key_char = self->key[i + buff_key];
+		char key_char = self->key[self->pos];
 		unsigned char buffer = tipo ? key_char : (256 - key_char);
 		msje[i] += buffer;
 		if (!self->is_crypter) {
 			printf("%c", msje[i]);
 		}
+		self->pos++;
 	}
 }
 

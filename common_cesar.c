@@ -1,9 +1,10 @@
 #include "common_cesar.h"
 
-void cesar_create(cesar_t* self, char* method, char* key, bool is_crypter) {
+cesar_t* cesar_create(char* key, bool is_crypter) {
+	cesar_t* self = malloc(sizeof(cesar_t));
 	self->key = key;
-	self->method = method;
 	self->is_crypter = is_crypter;
+	return self;
 }
 
 static void cesar_code(cesar_t* self, unsigned char* msje, size_t len) {

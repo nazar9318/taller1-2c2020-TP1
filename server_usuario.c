@@ -39,14 +39,13 @@ static void user_execute(user_t* user, socket_t* aceptado) {
 	if (aceptado != NULL) {
 		int received = 0;
 		do {
-			unsigned char* msje = calloc(1, 64);
-			received = socket_receive(aceptado, msje, 64);
+			unsigned char mensaje[64];
+			received = socket_receive(aceptado, mensaje, 64);
 			if (received == -1) {
 				printf("Error al recibir mensaje del cliente\n");
 			} else {
-				user_translate(user, msje, received);
+				user_translate(user, mensaje, received);
 			}
-			free(msje);
 		} while (received > 0);
 		socket_destroy(aceptado);
 		printf("\n");
