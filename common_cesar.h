@@ -21,9 +21,4 @@ void cesar_create(cesar_t* self, char* method, char* key, bool is_crypter);
 //Post condicion: Ninguna
 void cesar_run(cesar_t* self, unsigned char* msje, int size);
 
-//Funcion: Libera la memoria reservada para el encoder
-//Pre condicion: Encoder previamente creado.
-//Post condicion: Memoria liberada.
-void cesar_destroy(cesar_t* self);
-
 #endif

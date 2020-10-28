@@ -21,9 +21,4 @@ void rc4_create(rc4_t* self, char* method, char* key, bool is_crypter);
 //Post condicion: Ninguna
 void rc4_run(rc4_t* self, unsigned char* msje, int size);
 
-//Funcion: Libera la memoria reservada para el encoder
-//Pre condicion: Encoder previamente creado.
-//Post condicion: Memoria liberada.
-void rc4_destroy(rc4_t* self);
-
 #endif

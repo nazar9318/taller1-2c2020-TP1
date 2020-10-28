@@ -32,16 +32,13 @@ user_t* user_create(int argc, char *argv[]) {
 
 void user_run(user_t* user) {
 	if (user != NULL && &user->cliente != NULL) {
-		while (!reader_EOF(&user->reader)) {
-			unsigned char mensaje[64];
-			reader_readFile(&user->reader, mensaje);
-			if (mensaje != NULL) {
-				encoder_run(&user->encoder, mensaje, 64);
-				socket_send(&user->cliente, mensaje, reader_getRead(&user->reader));
-			} else {
-				printf("Fallo al leer el archivo\n");
-			}
-		}
+		int send = 0;
+		do {
+			unsigned char msje[64];
+			reader_readFile(&user->reader, msje);
+			encoder_run(&user->encoder, msje, 64);
+			send = socket_send(&user->cliente, msje, reader_getRead(&user->reader));
+		} while (!reader_EOF(&user->reader) && send > 0);
 	}
 }
 

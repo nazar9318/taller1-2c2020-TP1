@@ -31,9 +31,3 @@ void vigenere_run(vigenere_t* self, unsigned char* msje, int size) {
 		vigenere_code(self, msje, size);
 	}
 }
-
-void vigenere_destroy(vigenere_t* encoder) {
-	if (encoder != NULL) {
-		free(encoder);
-	}
-}

@@ -63,7 +63,7 @@ static void socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
 		}
 	}
 	if (count == NULL && !success) {
-		sckt = NULL;
+		printf("Fallo al conectar al socket\n");
 	}
 }
 
@@ -118,9 +118,6 @@ void socket_accept(socket_t* accepted, socket_t* self) {
 	if (aceptado == -1) {
 		printf("Error, servidor no puede aceptar al cliente: %s\n", strerror(errno));
 		socket_destroy(self);
-	}
-	if (accepted == NULL) {
-		printf("Error al alocar memoria para crear el socket aceptado\n");
 	}
 	accepted->fd = aceptado;
 }

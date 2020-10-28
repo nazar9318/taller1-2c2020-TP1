@@ -6,11 +6,11 @@ void rc4_create(rc4_t* self, char* method, char* key, bool is_crypter) {
 	self->is_crypter = is_crypter;
 }
 
-static void rc4_swap(unsigned char* s_box, unsigned int pos_a, unsigned int pos_b) {
+static void rc4_swap(unsigned char* s, unsigned int a, unsigned int b) {
 	unsigned char aux;
-	aux = s_box[pos_a];
-	s_box[pos_a] = s_box[pos_b];
-	s_box[pos_b] = aux;
+	aux = s[a];
+	s[a] = s[b];
+	s[a] = aux;
 }
 
 static void rc4_codeSBOX(unsigned char* s_box, char* key) {
@@ -54,5 +54,3 @@ void rc4_run(rc4_t* self, unsigned char* msje, int size) {
 		rc4_code(self, msje, size);
 	}
 }
-
-void rc4_destroy(rc4_t* encoder) {}
