@@ -12,7 +12,7 @@ typedef struct{
 //Funcion: Crea un tipo de dato selector.
 //Pre condicion: Ninguna.
 //Post condicion: Devuelve una referencia al selector creado.
-selector_t* selector_create(char* argv_method, char* argv_key);
+void selector_create(selector_t* self, char* argv_method, char* argv_key);
 
 //Funcion: Devuelve el método del selector.
 //Pre condicion: Selector previamente creado.

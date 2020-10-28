@@ -8,8 +8,8 @@
 typedef struct{
     socket_t* cliente;
     encoder_t* encoder;
-    selector_t* selector;
-    reader_t* reader;
+    selector_t selector;
+    reader_t reader;
 }user_t;
 
 //Funcion: Crea un tipo de dato cliente usuario

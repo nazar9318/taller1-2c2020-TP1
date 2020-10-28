@@ -8,7 +8,7 @@
 typedef struct{
     socket_t* server;
     encoder_t* encoder;
-    selector_t* selector;
+    selector_t selector;
 }user_t;
 
 //Funcion: Crea un tipo de dato cliente usuario

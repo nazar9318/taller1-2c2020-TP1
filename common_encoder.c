@@ -1,14 +1,18 @@
 #include "common_encoder.h"
 
-encoder_t* encoder_create(char* method, char* key, bool es_encriptador) {
+encoder_t* encoder_create(char* method, char* key, bool is_crypter) {
 	encoder_t* encoder = malloc(sizeof(encoder_t));
+	if (encoder == NULL) {
+		printf("Fallo al alocar memoria para el encoder\n");
+		return NULL;
+	}
 	encoder->key = key;
 	encoder->method = method;
-	encoder->es_encriptador = es_encriptador;
+	encoder->is_crypter = is_crypter;
 	return encoder;
 }
 
-static unsigned char* encoder_cesar(encoder_t* self, unsigned char* msje, size_t len) {
+/*static unsigned char* encoder_cesar(encoder_t* self, unsigned char* msje, size_t len) {
 	bool es_encriptador = self->es_encriptador;
 	unsigned int u_key = (unsigned int) strtol(self->key, (char**) NULL,10);
 	if (u_key == 0 && self->key[0] != '0') {
@@ -92,8 +96,38 @@ unsigned char* encoder_encode(encoder_t* self, unsigned char* msje, int size) {
 		return NULL;
 	}
 	return encoder_choose(self, msje, size);
+}*/
+
+static void encoder_choose(encoder_t* self, unsigned char* msje, int len) {
+	if (strcmp(self->method, "cesar") == 0) {
+		cesar_t cesar;
+		cesar_create(&cesar, self->method, self->key, self->is_crypter);
+		cesar_run(&cesar, msje, len);
+	} else if (strcmp(self->method, "vigenere") == 0) {
+		vigenere_t vigenere;
+		vigenere_create(&vigenere, self->method, self->key, self->is_crypter);
+		vigenere_run(&vigenere, msje, len);
+	} else if (strcmp(self->method, "rc4") == 0) {
+		rc4_t rc4;
+		rc4_create(&rc4, self->method, self->key, self->is_crypter);
+		rc4_run(&rc4, msje, len);
+	} else {
+		printf("El metodo de codificacion provisto es incorrecto\n");
+	}
+}
+
+void encoder_run(encoder_t* self, unsigned char* msje, int size) {
+	if (size < 0) {
+		printf("Error, el mensaje a codificar es inválido\n");
+	} else if (self->key == NULL) {
+		printf("Error, la clave de codificacion es incorrecta\n");
+	} else {
+		encoder_choose(self, msje, size);
+	}
 }
 
 void encoder_destroy(encoder_t* encoder) {
-    free(encoder);
+	if (encoder != NULL) {
+		free(encoder);
+	}
 }

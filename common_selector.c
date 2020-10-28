@@ -1,16 +1,14 @@
 #include "common_selector.h"
 
-selector_t* selector_create(char* arg_method, char* arg_key) {
-	selector_t* selector = malloc(sizeof(selector_t));
-	selector->method = NULL;
-	selector->key = NULL;
-	if (strncmp(arg_method, "--method=", 9) == 0) {
-		selector->method = strchr(arg_method, '=');
+void selector_create(selector_t* self, char* argv_method, char* argv_key) {
+	self->method = NULL;
+	self->key = NULL;
+	if (strncmp(argv_method, "--method=", 9) == 0) {
+		self->method = strchr(argv_method, '=');
 	}
-	if (strncmp(arg_key, "--key=", 6) == 0) {
-		selector->key = strchr(arg_key, '=');
+	if (strncmp(argv_key, "--key=", 6) == 0) {
+		self->key = strchr(argv_key, '=');
 	}
-	return selector;
 }
 
 char* selector_getMethod(selector_t* self) {
@@ -21,6 +19,4 @@ char* selector_getKey(selector_t* self) {
 	return self->key+1;
 }
 
-void selector_destroy(selector_t* selector) {
-	free(selector);
-}
+void selector_destroy(selector_t* selector) {}
