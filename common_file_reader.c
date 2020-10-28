@@ -2,9 +2,6 @@
 
 void reader_readFile(reader_t* self, unsigned char* buffer) {
 	size_t read = fread(buffer, 1, self->tamanio, self->file);
-	if (read < 64){
-		buffer[read] = '\0';
-	}
 	self->tamanio = read;
 }
 
