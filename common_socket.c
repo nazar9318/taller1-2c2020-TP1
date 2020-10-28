@@ -120,8 +120,12 @@ int socket_send(socket_t* self, unsigned char* mensaje, size_t size) {
 
 int socket_receive(socket_t* self, unsigned char* mensaje, size_t len) {
 	int received = 0;
-	received = recv(self->fd, mensaje, len, 0);
-	return received;
+	int total = 0;
+	do {
+		received = recv(self->fd, mensaje + total, len, 0);
+		total += received;
+	} while (received > 0);
+	return total;
 }
 
 void socket_accept(socket_t* accepted, socket_t* self) {
