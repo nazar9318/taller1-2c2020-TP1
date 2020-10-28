@@ -106,10 +106,9 @@ void socket_create(socket_t* self, char* host, char* port, bool is) {
 }
 
 int socket_send(socket_t* self, unsigned char* mensaje, size_t size) {
-	int sent = 0;
 	int total = 0;
 	while (total < size) {
-		sent = send(self->fd, mensaje + total, size - total, MSG_NOSIGNAL);
+		int sent = send(self->fd, mensaje + total, size - total, MSG_NOSIGNAL);
 		if (sent == -1) {
 			return -1;
 		} else {

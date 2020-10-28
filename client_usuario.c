@@ -32,12 +32,11 @@ user_t* user_create(int argc, char *argv[]) {
 
 void user_run(user_t* user) {
 	if (user != NULL && &user->cliente != NULL) {
-		int send = 0;
 		while (!reader_EOF(&user->reader)) {
 			unsigned char msje[64];
 			reader_readFile(&user->reader, msje);
 			encoder_run(&user->encoder, msje, 64);
-			send = socket_send(&user->cliente, msje, reader_getRead(&user->reader));
+			int send = socket_send(&user->cliente, msje, reader_getRead(&user->reader));
 			if (send == -1) {
 				printf("Error al enviar mensaje\n");
 				break;
