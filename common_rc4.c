@@ -1,20 +1,20 @@
 #include "common_rc4.h"
 
-static void rc4_swap(unsigned char* s, unsigned int a, unsigned int b) {
+static void rc4_swap(rc4_t* self, unsigned int a, unsigned int b) {
 	unsigned char aux;
-	aux = s[a];
-	s[a] = s[b];
-	s[a] = aux;
+	aux = self->s_box[a];
+	self->s_box[a] = self->s_box[b];
+	self->s_box[b] = aux;
 }
 
 static void rc4_initializeSBOX(rc4_t* self) {
-	for (unsigned int i = 0; i < 256; i++) {
+	for (int i = 0; i < 256; i++) {
 		self->s_box[i] = i;
 	}
-	unsigned int j = 0;
-	for (unsigned int i = 0; i < 256; i++) {
+	int j = 0;
+	for (int i = 0; i < 256; i++) {
 		j = (j + self->s_box[i] + self->key[i % strlen(self->key)]) & 255;
-		rc4_swap(self->s_box, i, j);
+		rc4_swap(self, i, j);
 	}
 }
 
@@ -22,19 +22,22 @@ rc4_t* rc4_create(char* key, bool is_crypter) {
 	rc4_t* self = malloc(sizeof(rc4_t));
 	self->key = key;
 	self->is_crypter = is_crypter;
-	self->i = 0;
-    self->j = 0;
 	rc4_initializeSBOX(self);
+	self->i = 0;
+	self->j = 0;
 	return self;
+}
+
+static unsigned char rc4_output(rc4_t* self) {
+	self->i = (self->i + 1) % 256;
+	self->j = (self->j + self->s_box[self->i]) % 256;
+	rc4_swap(self, self->i, self->j);
+	return self->s_box[(self->s_box[self->i] + self->s_box[self->j]) % 256];
 }
 
 static void rc4_code(rc4_t* self, unsigned char* msje, size_t size) {
 	for (int k = 0; k < size; k++) {
-		self->i = (self->i + 1) & 255;
-		self->j = (self->j + self->s_box[self->i]) & 255;
-		rc4_swap(self->s_box, self->i, self->j);
-		unsigned int t = (self->s_box[self->i] + self->s_box[self->j]) & 255;
-		msje[k] = (msje[k] ^ (self->s_box[t]));
+		msje[k] = msje[k] ^ rc4_output(self);
 		if (!self->is_crypter) {
 			printf("%c", msje[k]);
 		}
