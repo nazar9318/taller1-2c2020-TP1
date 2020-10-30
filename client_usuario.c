@@ -1,56 +1,73 @@
 #include "client_usuario.h"
 
-static void user_chooseEncoder(user_t* user) {
+static int user_chooseEncoder(user_t* user) {
 	char* method = NULL;
 	method = selector_getMethod(&user->selector);
 	char* key = NULL;
 	key = selector_getKey(&user->selector);
-	encoder_create(&user->encoder, method, key, true);
+	return encoder_create(&user->encoder, method, key, true);
 }
 
 user_t* user_create(int argc, char *argv[]) {
 	if (argc > 4 && argc < 7) {
 		user_t* user = malloc(sizeof(user_t));
 		if (user == NULL) {
-			printf("Fallo al alocar memoria para el usuario\n");
+			printf("Cliente_usuario: Fallo al alocar memoria para el usuario\n");
 			return NULL;
 		}
 		reader_create(&user->reader, stdin);
-		socket_create(&user->cliente, argv[1], argv[2], false);
-		if (&user->cliente == NULL) {
-			printf("Fallo al crear el socket cliente\n");
+		if (socket_create(&user->cliente, argv[1], argv[2], false) == -1) {
+			printf("Cliente_usuario: Fallo al crear el socket cliente\n");
 			user_destroy(user);
 			return NULL;
 		}
-		selector_create(&user->selector, argv[3], argv[4]);
-		user_chooseEncoder(user);
+		if (selector_create(&user->selector, argv[3], argv[4]) == -1) {
+			printf("Cliente_usuario: Fallo al crear el selector\n");
+			user_destroy(user);
+			return NULL;
+		}
+		if (user_chooseEncoder(user) == -1) {
+			user_destroy(user);
+			return NULL;
+		}
 		return user;
 	}
-	printf("La cantidad de argumentos insertados es incorrecta.\n");
+	printf("Cliente_usuario: La cantidad de argumentos insertados es inválida\n");
 	return NULL;
 }
 
-void user_run(user_t* user) {
-	if (user != NULL && &user->cliente != NULL) {
-		while (!reader_EOF(&user->reader)) {
-			unsigned char msje[64];
-			reader_readFile(&user->reader, msje);
-			encoder_run(&user->encoder, msje, reader_getRead(&user->reader));
-			int send = socket_send(&user->cliente, msje, reader_getRead(&user->reader));
-			if (send == -1) {
-				printf("Error al enviar mensaje\n");
-				break;
+int user_run(user_t* user) {
+	while (!reader_EOF(&user->reader)) {
+		unsigned char msje[64];
+		reader_readFile(&user->reader, msje);
+		size_t len = reader_getRead(&user->reader);
+		if (len != -1) {
+			if (encoder_run(&user->encoder, msje, len) == -1) {
+				printf("Cliente_usuario: Error al encriptar mensaje\n");
+				return -1;
 			}
+			int send = socket_send(&user->cliente, msje, len);
+			if (send == -1) {
+				printf("Cliente_usuario: Error al enviar mensaje\n");
+				return -1;
+			}
+		} else {
+			return -1;
 		}
 	}
+	return 0;
 }
 
-void user_destroy(user_t* user) {
+int user_destroy(user_t* user) {
 	if (user != NULL) {
-		selector_destroy(&user->selector);
-		encoder_destroy(&user->encoder);
-		reader_destroy(&user->reader);
-		socket_destroy(&user->cliente);
+		if (encoder_destroy(&user->encoder) == -1) {
+			printf("Cliente_usuario: Error al destruir encriptador\n");
+		}
+		if (socket_destroy(&user->cliente) == -1) {
+			printf("Cliente_usuario: Error al destruir socket\n");
+		}
 		free(user);
+		return 0;
 	}
+	return -1;
 }

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 typedef struct{
-    char* key;
+    unsigned int key;
     bool is_crypter;
 }cesar_t;
 

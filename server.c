@@ -8,6 +8,8 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 	user_run(user);
-	user_destroy(user);
+	if (user_destroy(user) == -1) {
+		printf("Error al destruir usuario\n");
+	}
 	return 0;
 }

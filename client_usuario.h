@@ -20,12 +20,12 @@ user_t* user_create(int argc, char *argv[]);
 //Funcion: Ejecuta el flujo del programa completo
 //Pre condicion: User previamente creado.
 //Post condicion: Ninguna
-void user_run(user_t* user);
+int user_run(user_t* user);
 
 //Funcion: Libera la memoria reservada.
 //Pre condicion: User previamente creado
 //Post condicion: Memoria liberada
-void user_destroy(user_t* user);
+int user_destroy(user_t* user);
 
 #endif
 

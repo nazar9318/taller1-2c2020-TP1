@@ -1,45 +1,47 @@
 #include "common_encoder.h"
 
-void encoder_create(encoder_t* self, char* method, char* key, bool is) {
-	self->key = key;
-	self->method = method;
-	self->is_crypter = is;
-	if (strcmp(self->method, "cesar") == 0) {
+int encoder_create(encoder_t* self, char* method, char* key, bool is) {
+	self->protocol = NULL;
+	if (strcmp(method, "cesar") == 0) {
 		self->mode = CESAR;
-		self->protocol = (void*)cesar_create(self->key, self->is_crypter);
-	} else if (strcmp(self->method, "vigenere") == 0) {
+		self->protocol = (void*)cesar_create(key, is);
+	} else if (strcmp(method, "vigenere") == 0) {
 		self->mode = VIGENERE;
-		self->protocol = (void*)vigenere_create(self->key, self->is_crypter);
-	} else if (strcmp(self->method, "rc4") == 0) {
+		self->protocol = (void*)vigenere_create(key, is);
+	} else if (strcmp(method, "rc4") == 0) {
 		self->mode = RC4;
-		self->protocol = (void*)rc4_create(self->key, self->is_crypter);
+		self->protocol = (void*)rc4_create(key, is);
 	} else {
-		printf("El metodo de codificacion provisto es incorrecto\n");
+		return -1;
+	}
+	if (self->protocol == NULL) {
+		printf("Encoder: Fallo al crear codificador\n");
+		return -1;
+	}
+	return 0;
+}
+
+int encoder_run(encoder_t* self, unsigned char* msje, int len) {
+	switch (self->mode) {
+		case CESAR:
+			cesar_run((cesar_t*)self->protocol, msje, len);
+			return 0;
+		case VIGENERE:
+			vigenere_run((vigenere_t*)self->protocol, msje, len);
+			return 0;
+		case RC4:
+			rc4_run((rc4_t*)self->protocol, msje, len);
+			return 0;
+		default:
+			printf("Encoder: El metodo de codificacion provisto es incorrecto\n");
+			return -1;
 	}
 }
 
-static void encoder_choose(encoder_t* self, unsigned char* msje, int len) {
-	if (strcmp(self->method, "cesar") == 0) {
-		cesar_run((cesar_t*)self->protocol, msje, len);
-	} else if (strcmp(self->method, "vigenere") == 0) {
-		vigenere_run((vigenere_t*)self->protocol, msje, len);
-	} else if (strcmp(self->method, "rc4") == 0) {
-		rc4_run((rc4_t*)self->protocol, msje, len);
-	} else {
-		printf("El metodo de codificacion provisto es incorrecto\n");
+int encoder_destroy(encoder_t* self) {
+	if (self->protocol != NULL) {
+		free(self->protocol);
+		return 0;
 	}
-}
-
-void encoder_run(encoder_t* self, unsigned char* msje, int size) {
-	if (size < 0) {
-		printf("Error, el mensaje a codificar es inválido\n");
-	} else if (self->key == NULL) {
-		printf("Error, la clave de codificacion es incorrecta\n");
-	} else {
-		encoder_choose(self, msje, size);
-	}
-}
-
-void encoder_destroy(encoder_t* self) {
-	free(self->protocol);
+	return -1;
 }

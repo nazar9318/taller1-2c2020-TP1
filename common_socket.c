@@ -49,22 +49,20 @@ static socket_t* socket_bindConnect(socket_t* sckt, struct addrinfo* dir) {
 //Funcion: crea el socket usando las direcciones pasadas por parametro.
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
-static void socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
+static int socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
 	struct addrinfo *count = NULL;
 	count = dirs;
-	bool success = false;
-	while (count != NULL && !success) {
+	while (count != NULL) {
 		sckt->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
 		if (socket_bindConnect(sckt, count) == NULL) {
 			close(sckt->fd);
 			count = count->ai_next;
 		} else {
-			success = true;
+			return 0;
 		}
 	}
-	if (count == NULL && !success) {
-		printf("Fallo al conectar al socket\n");
-	}
+	printf("Fallo al conectar al socket\n");
+	return -1;
 }
 
 //Funcion: Completa los criterios de direccion para un server
@@ -89,20 +87,21 @@ static struct addrinfo* socket_setDirs(char* host, char* port, bool is) {
 	struct addrinfo *direcciones;
 	error = getaddrinfo(host, port, &criteria, &direcciones);
 	if (error != 0) {
-		printf("No se pudieron crear las direcciones para el socket");
+		printf("No se pudo crear la dirección para el socket %s\n", strerror(errno));
 		freeaddrinfo(direcciones);
 		return NULL;
 	}
 	return direcciones;
 }
 
-void socket_create(socket_t* self, char* host, char* port, bool is) {
+int socket_create(socket_t* self, char* host, char* port, bool is) {
 	self->is_server = is;
 	struct addrinfo *direcciones = NULL;
 	direcciones = socket_setDirs(host, port, self->is_server);
 	if (direcciones != NULL) {
-		socket_setFileDesc(self, direcciones);
+		return socket_setFileDesc(self, direcciones);
 	}
+	return -1;
 }
 
 int socket_send(socket_t* self, unsigned char* mensaje, size_t size) {
@@ -128,13 +127,15 @@ int socket_receive(socket_t* self, unsigned char* mensaje, size_t len) {
 	return total;
 }
 
-void socket_accept(socket_t* accepted, socket_t* self) {
+int socket_accept(socket_t* accepted, socket_t* self) {
 	int aceptado = accept(self->fd, NULL, NULL);
 	if (aceptado == -1) {
 		printf("Error, servidor no puede aceptar al cliente: %s\n", strerror(errno));
 		socket_destroy(self);
+		return -1;
 	}
 	accepted->fd = aceptado;
+	return 0;
 }
 
 int socket_listen(socket_t* self) {
@@ -147,8 +148,6 @@ int socket_listen(socket_t* self) {
 	return 0;
 }
 
-void socket_destroy(socket_t* socket) {
-	if (socket != NULL) {
-		close(socket->fd);
-	}
+int socket_destroy(socket_t* socket) {
+	return close(socket->fd);
 }

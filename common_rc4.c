@@ -1,4 +1,5 @@
 #include "common_rc4.h"
+#include <errno.h>
 
 static void rc4_swap(rc4_t* self, unsigned int a, unsigned int b) {
 	unsigned char aux;
@@ -20,11 +21,15 @@ static void rc4_initializeSBOX(rc4_t* self) {
 
 rc4_t* rc4_create(char* key, bool is_crypter) {
 	rc4_t* self = malloc(sizeof(rc4_t));
-	self->key = key;
-	self->is_crypter = is_crypter;
-	rc4_initializeSBOX(self);
-	self->i = 0;
-	self->j = 0;
+	if (self != NULL) {
+		self->key = key;
+		self->is_crypter = is_crypter;
+		rc4_initializeSBOX(self);
+		self->i = 0;
+		self->j = 0;	
+	} else {
+		printf("RC4: Fallo al alocar memoria para rc4 %s\n", strerror(errno));
+	}
 	return self;
 }
 
@@ -46,9 +51,9 @@ static void rc4_code(rc4_t* self, unsigned char* msje, size_t size) {
 
 void rc4_run(rc4_t* self, unsigned char* msje, int size) {
 	if (size < 0) {
-		printf("Error, el mensaje a codificar es inválido\n");
+		printf("RC4: Error, el mensaje a codificar es inválido\n");
 	} else if (self->key == NULL) {
-		printf("Error, la clave de codificacion es incorrecta\n");
+		printf("RC4: Error, la clave de codificacion es incorrecta\n");
 	} else {
 		rc4_code(self, msje, size);
 	}

@@ -1,10 +1,15 @@
 #include "common_vigenere.h"
+#include <errno.h>
 
 vigenere_t* vigenere_create(char* key, bool is) {
 	vigenere_t* self = malloc(sizeof(vigenere_t));
-	self->key = key;
-	self->is_crypter = is;
-	self->pos = 0;
+	if (self != NULL) {
+		self->key = key;
+		self->is_crypter = is;
+		self->pos = 0;
+	} else {
+		printf("Vigenere: Fallo al alocar memoria%s\n", strerror(errno));
+	}
 	return self;
 }
 
@@ -26,9 +31,9 @@ static void vigenere_code(vigenere_t* self, unsigned char* msje, size_t len) {
 
 void vigenere_run(vigenere_t* self, unsigned char* msje, int size) {
 	if (size < 0) {
-		printf("Error, el mensaje a codificar es inválido\n");
+		printf("Vigenere: Error, el mensaje a codificar es inválido\n");
 	} else if (self->key == NULL) {
-		printf("Error, la clave de codificacion es incorrecta\n");
+		printf("Vigenere: Error, la clave de codificacion es incorrecta\n");
 	} else {
 		vigenere_code(self, msje, size);
 	}

@@ -27,9 +27,4 @@ bool reader_EOF(reader_t* self);
 
 size_t reader_getRead(reader_t* self);
 
-//Funcion: Libera la memoria reservada para el file reader
-//Pre condicion: File_reader previamente creado.
-//Post condicion: Memoria liberada.
-void reader_destroy(reader_t* self);
-
 #endif

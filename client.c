@@ -7,7 +7,11 @@ int main(int argc, char *argv[]) {
 		printf("No se pudo crear al usuario\n");
 		return 0;
 	}
-	user_run(user);
-	user_destroy(user);
+	if (user_run(user) == -1) {
+		printf("Error al ejecutar el usuario\n");
+	}
+	if (user_destroy(user) == -1) {
+		printf("Error al destrui el usuario\n");
+	}
 	return 0;
 }
