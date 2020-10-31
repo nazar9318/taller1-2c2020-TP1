@@ -8,7 +8,7 @@ vigenere_t* vigenere_create(char* key, bool is) {
 		self->is_crypter = is;
 		self->pos = 0;
 	} else {
-		printf("Vigenere: Fallo al alocar memoria%s\n", strerror(errno));
+		printf("Vigenere: Fallo al alocar memoria %s\n", strerror(errno));
 	}
 	return self;
 }

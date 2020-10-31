@@ -11,19 +11,19 @@ typedef struct{
     selector_t selector;
 }user_t;
 
-//Funcion: Crea un tipo de dato cliente usuario
 //Pre condicion: Ninguna
-//Post condicion: Devuelve una referencia al cliente_usuario creado.
+//Post condicion: Devuelve una referencia al cliente_usuario creado
+//o NULL en caso de algún error al alocar memoria o al crear los atributos.
 user_t* user_create(int argc, char *argv[]);
 
 //Funcion: Ejecuta el flujo del programa completo
 //Pre condicion: User previamente creado.
-//Post condicion: Ninguna
+//Post condicion: Devuelve -1 en caso de error, o 0 si no hubo errores.
 int user_run(user_t* user);
 
 //Funcion: Libera la memoria reservada.
 //Pre condicion: User previamente creado
-//Post condicion: Memoria liberada
+//Post condicion: Devuelve -1 en caso de error, o 0 si no hubo errores.
 int user_destroy(user_t* user);
 
 #endif

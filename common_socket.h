@@ -16,7 +16,7 @@ typedef struct{
 //Funcion: Crea un tipo de dato socket
 //Pre condicion: El puerto y el host deben
 //existir previamente y deben estar correctamente escritos
-//Post condicion: Devuelve un puntero al socket
+//Post condicion: Devuelve 0 si no hay error, -1 en caso contrario
 int socket_create(socket_t* self, char* host, char* port, bool is);
 
 //Funcion: Envia mensaje de tamaño size al file_descriptor 
@@ -33,17 +33,19 @@ int socket_receive(socket_t* self, unsigned char* mensaje, size_t len);
 //Funcion: Acepta el socket con el que se quiere comunicar,
 //creando uno nuevo.
 //Pre condicion: Socket previamente creado.
-//Post condicion: Devuelve el socket aceptado.
+//Post condicion: Devuelve 0 si se pudo crear el socket
+//o -1 en caso de error
 int socket_accept(socket_t* accepted, socket_t* socket);
 
 //Funcion: Server recibe y acepta una conexion del cliente
 //Pre condicion: Socket previamente creado.
-//Post condicion: Devuelve 0 si no hubo error, -1 si lo hubo.
+//Post condicion: Devuelve 0 si no hubo error, -1 si lo hubo
 int socket_listen(socket_t* self);
 
 //Funcion: Destruye el socket
 //Pre condicion: Socket previamente creado
-//Post condicion: Memoria reservada liberada
+//Post condicion: Memoria reservada liberada,
+//devuelve 0 si no hay error, -1 en caso contrario
 int socket_destroy(socket_t* self);
 
 #endif

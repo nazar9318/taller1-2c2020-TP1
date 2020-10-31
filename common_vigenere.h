@@ -11,7 +11,7 @@ typedef struct{
     int pos;
 }vigenere_t;
 
-//Funcion: Crea un tipo de dato encoder
+//Funcion: Crea un tipo de dato encoder_vigenere
 //Pre condicion: Ninguna
 //Post condicion: Devuelve una referencia al encoder creado.
 vigenere_t* vigenere_create(char* key, bool is);

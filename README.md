@@ -78,16 +78,45 @@ Las responsabilidades del programa se dividieron en los siguientes TDAs:
 - Encoder:
 -	Descripción:
 		Recibe el mensaje a codificar, el método y la clave correspondientes,
-		y encripta o traduce de acuerdo a los argumentos recibidos.
+		crea el TDA correspondiente al método y le pasa la clave. Luego, al
+		recibir un mensaje a codificar, llama a la instancia del método elegido
+		y le delega el proceso de encriptación o traducción.
 -	Pre condición:
 		Sólo soporta métodos Cesar, Vigenere y RC4.
 -	Post condición:
 		Ninguna.
 
+- Encoder_cesar:
+-	Descripción:
+		Recibe el mensaje a codificar, el método y la clave correspondientes,
+		y encripta o traduce de acuerdo a los argumentos recibidos.
+-	Pre condición:
+		Ninguna.
+-	Post condición:
+		Ninguna.
+
+- Encoder_vigenere:
+-	Descripción:
+		Recibe el mensaje a codificar, y la clave correspondiente,
+		y encripta o traduce el primero de acuerdo al valor de la última.
+-	Pre condición:
+		Ninguna.
+-	Post condición:
+		Ninguna.
+
+- Encoder_rc4:
+-	Descripción:
+		Recibe el mensaje a codificar, y la clave correspondiente,
+		y encripta o traduce el primero de acuerdo al valor de la última.
+-	Pre condición:
+		Ninguna.
+-	Post condición:
+		Ninguna.
+
 - Socket:
 -	Descripción:
-		Recibe puerto si es server, o puerto y host si es cliente, y devuelve
-		un socket con el que recibir o enviar mensajes respectivamente.
+		Recibe el mensaje a codificar, y la clave correspondiente,
+		y encripta o traduce el primero de acuerdo al valor de la última.
 -	Pre condición:
 		Ninguna.
 -	Post condición:
