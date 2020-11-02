@@ -12,6 +12,7 @@ int encoder_create(encoder_t* self, char* method, char* key, bool is) {
 		self->mode = RC4;
 		self->protocol = (void*)rc4_create(key, is);
 	} else {
+		printf("Encoder: Método de codificación incorrecto\n");
 		return -1;
 	}
 	if (self->protocol == NULL) {
@@ -33,7 +34,6 @@ int encoder_run(encoder_t* self, unsigned char* msje, int len) {
 			rc4_run((rc4_t*)self->protocol, msje, len);
 			return 0;
 		default:
-			printf("Encoder: El metodo de codificacion provisto es incorrecto\n");
 			return -1;
 	}
 }

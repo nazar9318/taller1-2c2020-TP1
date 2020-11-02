@@ -30,20 +30,20 @@ static int socket_connect(socket_t* socket, struct addrinfo* dir) {
 	return 0;
 }
 
-static socket_t* socket_bindConnect(socket_t* sckt, struct addrinfo* dir) {
+static int socket_bindConnect(socket_t* sckt, struct addrinfo* dir) {
 	if (sckt->is_server) {
 		if (socket_bind(sckt, dir) == 0) {
 			freeaddrinfo(dir);
-			return sckt;
+			return 0;
 		}
 	} else {
 		if (socket_connect(sckt, dir) == 0) {
 			freeaddrinfo(dir);
-			return sckt;
+			return 0;
 		}
 	}
 	freeaddrinfo(dir);
-	return NULL;
+	return -1;
 }
 
 //Funcion: crea el socket usando las direcciones pasadas por parametro.
@@ -54,7 +54,7 @@ static int socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
 	count = dirs;
 	while (count != NULL) {
 		sckt->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
-		if (socket_bindConnect(sckt, count) == NULL) {
+		if (socket_bindConnect(sckt, count) == -1) {
 			close(sckt->fd);
 			count = count->ai_next;
 		} else {
