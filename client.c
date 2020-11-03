@@ -9,9 +9,10 @@ int main(int argc, char *argv[]) {
 	}
 	if (user_run(&user) == -1) {
 		printf("Error al ejecutar el usuario\n");
+		return 0;
 	}
 	if (user_destroy(&user) == -1) {
-		printf("Error al destrui el usuario\n");
+		printf("Error al destruir el usuario\n");
 	}
 	return 0;
 }
