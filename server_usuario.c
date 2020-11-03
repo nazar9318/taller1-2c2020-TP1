@@ -8,31 +8,26 @@ static int user_chooseTranslator(user_t* user) {
     return encoder_create(&user->encoder, method, key, false);
 }
 
-user_t* user_create(int argc, char *argv[]) {
+int user_create(user_t* user, int argc, char *argv[]) {
 	if (argc == 4) {
-		user_t* user = malloc(sizeof(user_t));
-		if (user == NULL) {
-			printf("Server_usuario: Fallo al alocar memoria para el user\n");
-			return NULL;
-		}
 		if (socket_create(&user->server, NULL, argv[1], true) == -1) {
 			printf("Server_usuario: Fallo al crear server\n");
 			user_destroy(user);
-			return NULL;
+			return -1;
 		}
 		if (selector_create(&user->selector, argv[2], argv[3]) == -1) {
 			printf("Server_usuario: Fallo al crear el selector\n");
 			user_destroy(user);
-			return NULL;
+			return -1;
 		}
 		if (user_chooseTranslator(user) == -1) {
 			user_destroy(user);
-			return NULL;
+			return -1;
 		}
-		return user;
+		return 0;
 	}
 	printf("Server_usuario: La cantidad de argumentos es incorrecta\n");
-	return NULL;
+	return -1;
 }
 
 static int user_execute(user_t* user, socket_t* aceptado) {
@@ -76,15 +71,13 @@ int user_run(user_t* user) {
 }
 
 int user_destroy(user_t* user) {
-	if (user != NULL) {
-		if (socket_destroy(&user->server) == -1) {
-			printf("Server_usuario: Error al destruir socket\n");
-		}
-		if (encoder_destroy(&user->encoder) == -1) {
-			printf("Server_usuario: Error al destruir encriptador\n");
-		}
-		free(user);
-		return 0;
+	if (socket_destroy(&user->server) == -1) {
+		printf("Server_usuario: Error al destruir socket\n");
+		return -1;
 	}
-	return 1;
+	if (encoder_destroy(&user->encoder) == -1) {
+		printf("Server_usuario: Error al destruir encriptador\n");
+		return -1;
+	}
+	return 0;
 }
