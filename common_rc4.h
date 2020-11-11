@@ -23,4 +23,6 @@ rc4_t* rc4_create(char* key, bool is_crypter);
 //Post condicion: Ninguna
 void rc4_run(rc4_t* self, unsigned char* msje, int size);
 
+void rc4_destroy(rc4_t* self);
+
 #endif

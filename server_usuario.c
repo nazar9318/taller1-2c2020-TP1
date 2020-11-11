@@ -1,10 +1,8 @@
 #include "server_usuario.h"
 
 static int user_chooseTranslator(user_t* user) {
-    char* method = NULL;
-    method = selector_getMethod(&user->selector);
-    char* key = NULL;
-    key = selector_getKey(&user->selector);
+    char* method = selector_getMethod(&user->selector);
+    char* key = selector_getKey(&user->selector);
     return encoder_create(&user->encoder, method, key, false);
 }
 

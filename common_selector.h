@@ -17,11 +17,13 @@ int selector_create(selector_t* self, char* argv_method, char* argv_key);
 //Funcion: Devuelve el método del selector.
 //Pre condicion: Selector previamente creado.
 //Post condicion: Devuelve un puntero al método.
-char* selector_getMethod(selector_t* selector);
+char* selector_getMethod(selector_t* self);
 
 //Funcion: Devuelve la clave del selector.
 //Pre condicion: Selector previamente creado.
 //Post condicion: Devuelve un puntero a la clave del método.
-char* selector_getKey(selector_t* selector);
+char* selector_getKey(selector_t* self);
+
+void selector_destroy(selector_t* self);
 
 #endif 

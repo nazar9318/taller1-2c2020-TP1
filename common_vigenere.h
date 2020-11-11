@@ -21,4 +21,6 @@ vigenere_t* vigenere_create(char* key, bool is);
 //Post condicion: Ninguna
 void vigenere_run(vigenere_t* self, unsigned char* msje, int size);
 
+void vigenere_destroy(vigenere_t* self);
+
 #endif

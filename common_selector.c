@@ -25,3 +25,5 @@ char* selector_getMethod(selector_t* self) {
 char* selector_getKey(selector_t* self) {
 	return self->key+1;
 }
+
+void selector_destroy(selector_t* self) {}

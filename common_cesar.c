@@ -41,3 +41,5 @@ void cesar_run(cesar_t* self, unsigned char* msje, int size) {
 		cesar_code(self, msje, size);
 	}
 }
+
+void cesar_destroy(cesar_t* self) {}

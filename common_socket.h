@@ -35,7 +35,7 @@ int socket_receive(socket_t* self, unsigned char* mensaje, size_t len);
 //Pre condicion: Socket previamente creado.
 //Post condicion: Devuelve 0 si se pudo crear el socket
 //o -1 en caso de error
-int socket_accept(socket_t* accepted, socket_t* socket);
+int socket_accept(socket_t* accepted, socket_t* self);
 
 //Funcion: Server recibe y acepta una conexion del cliente
 //Pre condicion: Socket previamente creado.

@@ -58,3 +58,5 @@ void rc4_run(rc4_t* self, unsigned char* msje, int size) {
 		rc4_code(self, msje, size);
 	}
 }
+
+void rc4_destroy(rc4_t* self) {}

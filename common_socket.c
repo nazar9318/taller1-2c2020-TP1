@@ -14,6 +14,7 @@ static int socket_bind(socket_t* socket, struct addrinfo* dir) {
 		close(socket->fd);
 		return -1;
 	}
+	freeaddrinfo(dir);
 	return 0;
 }
 
@@ -27,31 +28,19 @@ static int socket_connect(socket_t* socket, struct addrinfo* dir) {
 		close(socket->fd);
 		return -1;
 	}
+	freeaddrinfo(dir);
 	return 0;
 }
 
 static int socket_bindConnect(socket_t* sckt, struct addrinfo* dir) {
-	if (sckt->is_server) {
-		if (socket_bind(sckt, dir) == 0) {
-			freeaddrinfo(dir);
-			return 0;
-		}
-	} else {
-		if (socket_connect(sckt, dir) == 0) {
-			freeaddrinfo(dir);
-			return 0;
-		}
-	}
-	freeaddrinfo(dir);
-	return -1;
+	return sckt->is_server ? socket_bind(sckt, dir) : socket_connect(sckt, dir);
 }
 
 //Funcion: crea el socket usando las direcciones pasadas por parametro.
 //Pre condicion: Ninguna.
 //Post condicion: En caso de fallar devuelve NULL
 static int socket_setFileDesc(socket_t* sckt, struct addrinfo *dirs) {
-	struct addrinfo *count = NULL;
-	count = dirs;
+	struct addrinfo *count = dirs;
 	while (count != NULL) {
 		sckt->fd = socket(count->ai_family,count->ai_socktype,count->ai_protocol);
 		if (socket_bindConnect(sckt, count) == -1) {
@@ -96,7 +85,7 @@ static struct addrinfo* socket_setDirs(char* host, char* port, bool is) {
 
 int socket_create(socket_t* self, char* host, char* port, bool is) {
 	self->is_server = is;
-	struct addrinfo *direcciones = NULL;
+	struct addrinfo *direcciones;
 	direcciones = socket_setDirs(host, port, self->is_server);
 	if (direcciones != NULL) {
 		return socket_setFileDesc(self, direcciones);
@@ -122,7 +111,11 @@ int socket_receive(socket_t* self, unsigned char* mensaje, size_t len) {
 	int total = 0;
 	do {
 		received = recv(self->fd, mensaje + total, len - total, 0);
-		total += received;
+		if (received == -1) {
+			return -1;
+		} else {
+			total += received;
+		}
 	} while (received > 0 && total < len);
 	return total;
 }
@@ -148,6 +141,6 @@ int socket_listen(socket_t* self) {
 	return 0;
 }
 
-int socket_destroy(socket_t* socket) {
-	return close(socket->fd);
+int socket_destroy(socket_t* self) {
+	return close(self->fd);
 }

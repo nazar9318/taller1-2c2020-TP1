@@ -22,16 +22,16 @@ int encoder_create(encoder_t* self, char* method, char* key, bool is) {
 	return 0;
 }
 
-int encoder_run(encoder_t* self, unsigned char* msje, int len) {
+int encoder_run(encoder_t* self, unsigned char* msje, int size) {
 	switch (self->mode) {
 		case CESAR:
-			cesar_run((cesar_t*)self->protocol, msje, len);
+			cesar_run((cesar_t*)self->protocol, msje, size);
 			return 0;
 		case VIGENERE:
-			vigenere_run((vigenere_t*)self->protocol, msje, len);
+			vigenere_run((vigenere_t*)self->protocol, msje, size);
 			return 0;
 		case RC4:
-			rc4_run((rc4_t*)self->protocol, msje, len);
+			rc4_run((rc4_t*)self->protocol, msje, size);
 			return 0;
 		default:
 			return -1;

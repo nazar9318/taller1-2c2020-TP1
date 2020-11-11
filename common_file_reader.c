@@ -1,6 +1,6 @@
 #include "common_file_reader.h"
 
-void reader_readFile(reader_t* self, unsigned char* buffer) {
+int reader_readFile(reader_t* self, unsigned char* buffer) {
 	size_t read = fread(buffer, 1, self->tamanio, self->file);
 	if (ferror(self->file) != 0) {
 		printf("File_reader: Error al leer archivo");
@@ -8,17 +8,16 @@ void reader_readFile(reader_t* self, unsigned char* buffer) {
 	} else {
 		self->tamanio = read;
 	}
+	return read;
 }
 
-void reader_create(reader_t* reader, FILE* file) {
-    reader->file = file;
-    reader->tamanio = 64;
+void reader_create(reader_t* self, FILE* file) {
+    self->file = file;
+    self->tamanio = 64;
 }
 
-bool reader_EOF(reader_t* file_reader) {
-	return feof(file_reader->file);
+bool reader_EOF(reader_t* self) {
+	return feof(self->file);
 }
 
-size_t reader_getRead(reader_t* self) {
-	return self->tamanio;
-}
+void reader_destroy(reader_t* self) {}

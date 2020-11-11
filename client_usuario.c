@@ -1,10 +1,8 @@
 #include "client_usuario.h"
 
 static int user_chooseEncoder(user_t* user) {
-	char* method = NULL;
-	method = selector_getMethod(&user->selector);
-	char* key = NULL;
-	key = selector_getKey(&user->selector);
+	char* method = selector_getMethod(&user->selector);
+	char* key = selector_getKey(&user->selector);
 	return encoder_create(&user->encoder, method, key, true);
 }
 
@@ -34,8 +32,7 @@ int user_create(user_t* user, int argc, char *argv[]) {
 int user_run(user_t* user) {
 	while (!reader_EOF(&user->reader)) {
 		unsigned char msje[64];
-		reader_readFile(&user->reader, msje);
-		size_t len = reader_getRead(&user->reader);
+		size_t len = reader_readFile(&user->reader, msje);
 		if (len != -1) {
 			if (encoder_run(&user->encoder, msje, len) == -1) {
 				printf("Cliente_usuario: Error al encriptar mensaje\n");
